@@ -1,0 +1,16 @@
+# Production pointer at the signed release. Pinned to a specific tag;
+# do NOT use 'latest' or floating tags in prod.
+#
+# Promotion procedure:
+#   1. Verify the candidate release passed all sprints' tests
+#   2. Bump tarball_url + signature_url to the new tag
+#   3. Commit on main — PR-reviewed
+#   4. Argo CD reconciles; init-container pulls + verifies the new artifact
+#   5. If verification fails, the pod won't start — investigate before retrying
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: addon-release
+data:
+  tarball_url: "https://github.com/dangelojohn/alfacore/releases/download/v1.0.0/alfacore-modules-v1.0.0.tar.gz"
+  signature_url: "https://github.com/dangelojohn/alfacore/releases/download/v1.0.0/alfacore-modules-v1.0.0.tar.gz.sig"

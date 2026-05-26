@@ -1,0 +1,14 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_part_user","part.user","model_alfa_parts_part","alfa_core.group_user",1,0,0,0
+"access_part_advisor","part.advisor","model_alfa_parts_part","alfa_core.group_advisor",1,1,1,0
+"access_part_manager","part.manager","model_alfa_parts_part","alfa_core.group_manager",1,1,1,1
+"access_part_portal","part.portal","model_alfa_parts_part","base.group_portal",1,0,0,0
+"access_alt_user","alt.user","model_alfa_parts_part_alternative","alfa_core.group_user",1,0,0,0
+"access_alt_advisor","alt.advisor","model_alfa_parts_part_alternative","alfa_core.group_advisor",1,1,1,0
+"access_alt_manager","alt.manager","model_alfa_parts_part_alternative","alfa_core.group_manager",1,1,1,1
+"access_kit_advisor","kit.advisor","model_alfa_parts_part_kit","alfa_core.group_advisor",1,1,1,0
+"access_kit_manager","kit.manager","model_alfa_parts_part_kit","alfa_core.group_manager",1,1,1,1
+"access_kit_line_advisor","kit.line.advisor","model_alfa_parts_part_kit_line","alfa_core.group_advisor",1,1,1,1
+"access_kit_line_manager","kit.line.manager","model_alfa_parts_part_kit_line","alfa_core.group_manager",1,1,1,1
+"access_vendor_advisor","vendor.advisor","model_alfa_parts_part_vendor","alfa_core.group_advisor",1,0,0,0
+"access_vendor_manager","vendor.manager","model_alfa_parts_part_vendor","alfa_core.group_manager",1,1,1,1

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="loaner_stelvio_1" model="alfa_core_loaner.vehicle">
+      <field name="name">Loaner Stelvio Ti #1</field>
+      <field name="vin">ZASFAKBN3M7C00001</field>
+      <field name="license_plate">CDXJ 101</field>
+      <field name="year">2022</field>
+      <field name="model_name">Stelvio Ti</field>
+      <field name="platform_id" ref="alfa_fleet.platform_giorgio"/>
+      <field name="trim_id" ref="alfa_fleet.trim_ti"/>
+      <field name="color">Vesuvio Grey Metallic</field>
+      <field name="tier_eligibility">premium</field>
+      <field name="current_mileage_km">28450</field>
+      <field name="state">available</field>
+      <field name="sequence">10</field>
+    </record>
+
+    <record id="loaner_stelvio_2" model="alfa_core_loaner.vehicle">
+      <field name="name">Loaner Stelvio Ti #2</field>
+      <field name="vin">ZASFAKBN3N7C00002</field>
+      <field name="license_plate">CDXJ 102</field>
+      <field name="year">2023</field>
+      <field name="model_name">Stelvio Ti</field>
+      <field name="platform_id" ref="alfa_fleet.platform_giorgio"/>
+      <field name="trim_id" ref="alfa_fleet.trim_ti"/>
+      <field name="color">Trofeo White</field>
+      <field name="tier_eligibility">premium</field>
+      <field name="current_mileage_km">14200</field>
+      <field name="state">available</field>
+      <field name="sequence">20</field>
+    </record>
+
+    <record id="loaner_giulia_1" model="alfa_core_loaner.vehicle">
+      <field name="name">Loaner Giulia Sprint #1</field>
+      <field name="vin">ZARFAEBN8M7C00003</field>
+      <field name="license_plate">CDXJ 103</field>
+      <field name="year">2022</field>
+      <field name="model_name">Giulia Sprint</field>
+      <field name="platform_id" ref="alfa_fleet.platform_giorgio"/>
+      <field name="trim_id" ref="alfa_fleet.trim_sprint"/>
+      <field name="color">Anodized Blue</field>
+      <field name="tier_eligibility">premium</field>
+      <field name="current_mileage_km">31800</field>
+      <field name="state">available</field>
+      <field name="sequence">30</field>
+    </record>
+
+    <record id="loaner_giulia_qv" model="alfa_core_loaner.vehicle">
+      <field name="name">Loaner Giulia QV (Pro only)</field>
+      <field name="vin">ZARFAEBN9P7C00004</field>
+      <field name="license_plate">CDXJ 104</field>
+      <field name="year">2023</field>
+      <field name="model_name">Giulia Quadrifoglio</field>
+      <field name="platform_id" ref="alfa_fleet.platform_giorgio"/>
+      <field name="trim_id" ref="alfa_fleet.trim_quadrifoglio"/>
+      <field name="color">Rosso Competizione</field>
+      <field name="tier_eligibility">pro</field>
+      <field name="current_mileage_km">8900</field>
+      <field name="state">available</field>
+      <field name="sequence">40</field>
+    </record>
+
+    <record id="loaner_tonale_1" model="alfa_core_loaner.vehicle">
+      <field name="name">Loaner Tonale #1</field>
+      <field name="vin">ZASPAKB16P7C00005</field>
+      <field name="license_plate">CDXJ 105</field>
+      <field name="year">2023</field>
+      <field name="model_name">Tonale Veloce</field>
+      <field name="platform_id" ref="alfa_fleet.platform_compact"/>
+      <field name="trim_id" ref="alfa_fleet.trim_veloce"/>
+      <field name="color">Misano Blue</field>
+      <field name="tier_eligibility">basic_plus</field>
+      <field name="current_mileage_km">19500</field>
+      <field name="state">available</field>
+      <field name="sequence">50</field>
+    </record>
+
+  </data>
+</odoo>

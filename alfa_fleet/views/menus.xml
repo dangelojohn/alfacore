@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <menuitem id="menu_fleet"
+            name="Vehicles"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_vehicle"
+            sequence="10"/>
+
+  <menuitem id="menu_fleet_config_platforms"
+            name="Platforms"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_platform"
+            sequence="30"/>
+
+  <menuitem id="menu_fleet_config_engines"
+            name="Engines"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_engine"
+            sequence="40"/>
+
+</odoo>

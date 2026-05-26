@@ -1,0 +1,12 @@
+# Pointers at the signed release the addon-loader init-container should
+# fetch. Update on every release cut.
+#
+# Dev typically tracks the latest dev tag. To roll forward, bump this
+# ConfigMap and commit — Argo CD reconciles within a minute.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: addon-release
+data:
+  tarball_url: "https://github.com/dangelojohn/alfacore/releases/download/v0.1.0-dev/alfacore-modules-v0.1.0-dev.tar.gz"
+  signature_url: "https://github.com/dangelojohn/alfacore/releases/download/v0.1.0-dev/alfacore-modules-v0.1.0-dev.tar.gz.sig"

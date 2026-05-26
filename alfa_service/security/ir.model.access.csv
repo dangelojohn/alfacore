@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_bay_user","bay.user","model_alfa_service_bay","alfa_core.group_user",1,0,0,0
+"access_bay_advisor","bay.advisor","model_alfa_service_bay","alfa_core.group_advisor",1,1,0,0
+"access_bay_manager","bay.manager","model_alfa_service_bay","alfa_core.group_manager",1,1,1,1
+"access_qc_advisor","qc.advisor","model_alfa_service_quality_check","alfa_core.group_advisor",1,1,1,0
+"access_qc_manager","qc.manager","model_alfa_service_quality_check","alfa_core.group_manager",1,1,1,1
+"access_qc_portal","qc.portal","model_alfa_service_quality_check","base.group_portal",1,0,0,0

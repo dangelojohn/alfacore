@@ -1,0 +1,11 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_subscription_plan_user","subscription.plan.user","model_alfa_core_subscription_plan","alfa_core.group_user",1,0,0,0
+"access_subscription_plan_advisor","subscription.plan.advisor","model_alfa_core_subscription_plan","alfa_core.group_advisor",1,1,0,0
+"access_subscription_plan_manager","subscription.plan.manager","model_alfa_core_subscription_plan","alfa_core.group_manager",1,1,1,1
+"access_tier_benefit_user","tier.benefit.user","model_alfa_core_tier_benefit","alfa_core.group_user",1,0,0,0
+"access_tier_benefit_advisor","tier.benefit.advisor","model_alfa_core_tier_benefit","alfa_core.group_advisor",1,1,0,0
+"access_tier_benefit_manager","tier.benefit.manager","model_alfa_core_tier_benefit","alfa_core.group_manager",1,1,1,1
+"access_subscription_user","subscription.user","model_alfa_core_subscription","alfa_core.group_user",1,0,0,0
+"access_subscription_advisor","subscription.advisor","model_alfa_core_subscription","alfa_core.group_advisor",1,1,1,0
+"access_subscription_manager","subscription.manager","model_alfa_core_subscription","alfa_core.group_manager",1,1,1,1
+"access_subscription_portal","subscription.portal","model_alfa_core_subscription","base.group_portal",1,0,0,0

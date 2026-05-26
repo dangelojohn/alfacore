@@ -1,0 +1,90 @@
+# AlfaCore local development stack.
+#
+# Spins up Postgres, Odoo 19 CE, Qdrant, and Ollama wired together. The repo
+# is bind-mounted as Odoo's extra-addons path — your code changes show up
+# immediately (restart Odoo with `make dev-restart` to pick them up).
+#
+# Production parity: this stack mirrors the deploy/k8s topology. Same
+# Postgres image, same Odoo image, same `dbfilter = ^alfacore.*`. The K8s
+# overlay adds ingress + signed-artifact pulling; this stack skips those
+# for dev speed.
+#
+# Usage:
+#   make dev-up
+#   open http://localhost:8069
+#   make dev-down
+#   make dev-reset    # nukes volumes
+
+name: alfacore-dev
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  odoo:
+    image: docker.io/odoo:19.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      HOST: postgres
+      USER: odoo
+      PASSWORD: odoo
+    volumes:
+      - .:/mnt/extra-addons:ro          # bind-mount the repo as addons
+      - odoo-filestore:/var/lib/odoo
+      - ./tools/dev/odoo.conf:/etc/odoo/odoo.conf:ro
+    ports:
+      - "8069:8069"     # Odoo web
+      - "8072:8072"     # longpolling
+    command: ["odoo-bin", "--config=/etc/odoo/odoo.conf"]
+    restart: unless-stopped
+
+  qdrant:
+    # Used by alfa_tsb for RAG indexing — see Sprint 13.
+    image: qdrant/qdrant:v1.12.4
+    volumes:
+      - qdrant-data:/qdrant/storage
+    ports:
+      - "6333:6333"     # REST API + dashboard
+      - "6334:6334"     # gRPC
+    restart: unless-stopped
+
+  ollama:
+    # Used by alfa_core_diagnosis (LLM-orchestrated diagnosis) and
+    # alfa_tsb (embeddings via bge-large-en-v1.5).
+    # Pull models on first use: `docker compose exec ollama ollama pull bge-large`
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    # GPU passthrough — uncomment if you have nvidia-container-runtime
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  postgres-data:
+  odoo-filestore:
+  qdrant-data:
+  ollama-data:

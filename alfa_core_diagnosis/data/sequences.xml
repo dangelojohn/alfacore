@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="seq_diagnosis_report" model="ir.sequence">
+      <field name="name">AlfaCore Diagnosis Report</field>
+      <field name="code">alfa_core_diagnosis.report</field>
+      <field name="prefix">AC-DX-%(year)s-</field>
+      <field name="padding">6</field>
+      <field name="company_id" eval="False"/>
+    </record>
+  </data>
+</odoo>

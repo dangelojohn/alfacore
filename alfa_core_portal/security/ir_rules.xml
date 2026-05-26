@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- Portal users can only see their own vehicles -->
+    <record id="rule_vehicle_portal_own" model="ir.rule">
+      <field name="name">Portal: own vehicles only</field>
+      <field name="model_id" ref="alfa_fleet.model_alfa_fleet_vehicle"/>
+      <field name="domain_force">
+        [('ownership_ids.partner_id', '=', user.partner_id.id),
+         ('ownership_ids.active', '=', True)]
+      </field>
+      <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+      <field name="perm_create" eval="False"/>
+      <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Portal users can only see their own diagnosis reports -->
+    <record id="rule_diagnosis_portal_own" model="ir.rule">
+      <field name="name">Portal: own diagnoses only</field>
+      <field name="model_id" ref="alfa_core_diagnosis.model_alfa_core_diagnosis_report"/>
+      <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+      <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+    </record>
+
+    <!-- Portal users can see and decide on inspections of their own vehicles -->
+    <record id="rule_inspection_portal_own" model="ir.rule">
+      <field name="name">Portal: own inspections only</field>
+      <field name="model_id" ref="alfa_core_inspection.model_alfa_core_inspection_inspection"/>
+      <field name="domain_force">
+        [('vehicle_id.ownership_ids.partner_id', '=', user.partner_id.id)]
+      </field>
+      <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+    </record>
+
+    <!-- Portal users can update customer_decision on their own findings -->
+    <record id="rule_finding_portal_own" model="ir.rule">
+      <field name="name">Portal: own findings (decision write)</field>
+      <field name="model_id" ref="alfa_core_inspection.model_alfa_core_inspection_finding"/>
+      <field name="domain_force">
+        [('inspection_id.vehicle_id.ownership_ids.partner_id', '=', user.partner_id.id)]
+      </field>
+      <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="True"/>
+    </record>
+
+    <!-- Portal users see their own loaner allocations -->
+    <record id="rule_allocation_portal_own" model="ir.rule">
+      <field name="name">Portal: own loaner allocations only</field>
+      <field name="model_id" ref="alfa_core_loaner.model_alfa_core_loaner_allocation"/>
+      <field name="domain_force">[('partner_id', '=', user.partner_id.id)]</field>
+      <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+      <field name="perm_read" eval="True"/>
+      <field name="perm_write" eval="False"/>
+    </record>
+
+  </data>
+</odoo>

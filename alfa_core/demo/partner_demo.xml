@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="partner_dangelo" model="res.partner">
+      <field name="name">John D'Angelo</field>
+      <field name="street">130 Queens Quay East</field>
+      <field name="city">Toronto</field>
+      <field name="state_id" ref="base.state_ca_on"/>
+      <field name="country_id" ref="base.ca"/>
+      <field name="email">john.dangelo@example.com</field>
+      <field name="phone">+1 437-220-8793</field>
+      <field name="alfa_core_customer" eval="True"/>
+      <field name="alfa_core_preferred_channel">sms</field>
+      <field name="alfa_core_signup_date" eval="(DateTime.now() - relativedelta(years=3, months=6)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <record id="partner_bianchi" model="res.partner">
+      <field name="name">Marco Bianchi</field>
+      <field name="city">Toronto</field>
+      <field name="country_id" ref="base.ca"/>
+      <field name="email">m.bianchi@example.com</field>
+      <field name="alfa_core_customer" eval="True"/>
+      <field name="alfa_core_preferred_channel">email</field>
+      <field name="alfa_core_signup_date" eval="(DateTime.now() - relativedelta(years=1, months=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+  </data>
+</odoo>

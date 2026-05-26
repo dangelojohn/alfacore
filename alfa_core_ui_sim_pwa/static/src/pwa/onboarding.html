@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>AlfaCore — Onboarding</title>
+<link rel="stylesheet" href="/alfa_core_ui_sim_pwa/static/src/css/design_system.css">
+<style>
+    .onb-step { margin-bottom: 32px; }
+    .onb-step__num {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 32px; height: 32px; border-radius: 50%;
+        background: var(--ac-primary); color: white;
+        font-family: var(--ac-font-mono); font-weight: 700;
+        margin-right: 12px;
+    }
+    .onb-step__num--done { background: var(--ac-success); }
+    .onb-step__title { font-weight: 700; color: var(--ac-primary); }
+    .onb-step__body { margin-top: 8px; margin-left: 44px; color: var(--ac-text-2); }
+    .onb-progress {
+        height: 4px; background: var(--ac-border);
+        border-radius: 2px; overflow: hidden; margin: 16px 0 32px;
+    }
+    .onb-progress__bar {
+        height: 100%; background: var(--ac-spark);
+        width: 50%; transition: width 0.4s ease;
+    }
+</style>
+</head>
+<body>
+<div class="ac-pwa-shell">
+    <div class="ac-pwa-header">
+        <h2>AlfaCore</h2>
+        <span class="ac-badge ac-badge--cyan">v1.0 · sim</span>
+    </div>
+    <div class="ac-pwa-body">
+        <div class="ac-eyebrow">Welcome</div>
+        <h1 style="font-size: 24px;">Let's get your Stelvio set up.</h1>
+        <p style="color: var(--ac-text-2);">Four quick steps — about 3 minutes total.</p>
+
+        <div class="onb-progress"><div class="onb-progress__bar"></div></div>
+
+        <div class="onb-step">
+            <span class="onb-step__num onb-step__num--done">✓</span>
+            <span class="onb-step__title">Verify your identity</span>
+            <div class="onb-step__body">Email confirmed. Welcome aboard.</div>
+        </div>
+
+        <div class="onb-step">
+            <span class="onb-step__num onb-step__num--done">✓</span>
+            <span class="onb-step__title">Register your vehicle</span>
+            <div class="onb-step__body">
+                <strong id="vehicle-line">Loading…</strong>
+            </div>
+        </div>
+
+        <div class="onb-step">
+            <span class="onb-step__num">3</span>
+            <span class="onb-step__title">Pair your OBD-II scanner</span>
+            <div class="onb-step__body">
+                Bluetooth pairing — plug the dongle into your OBD-II port and
+                tap below.
+                <div style="margin-top: 12px;">
+                    <a class="ac-btn ac-btn--primary" href="#">Pair Scanner</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="onb-step">
+            <span class="onb-step__num">4</span>
+            <span class="onb-step__title">Choose your subscription</span>
+            <div class="onb-step__body">
+                Basic · Premium · Pro — review benefits and pick the right tier.
+            </div>
+        </div>
+    </div>
+    <div class="ac-pwa-nav">
+        <a href="/alfacore/sim/pwa/onboarding" class="active">Setup</a>
+        <a href="/alfacore/sim/pwa/digital-garage">Garage</a>
+        <a href="/alfacore/sim/pwa/scan-in-progress">Scan</a>
+        <a href="/alfacore/sim/pwa/diagnosis">Diagnosis</a>
+    </div>
+</div>
+<script src="/alfa_core_ui_sim_pwa/static/src/js/sim_interactions.js"></script>
+<script>
+    const MOCKUP_DATA = {
+        vehicle_line: "2018 Alfa Romeo Stelvio · 89,247 km",
+    };
+    window.PageInit = async function (pwa) {
+        const $el = document.getElementById("vehicle-line");
+        if (pwa.isMockup()) {
+            $el.textContent = MOCKUP_DATA.vehicle_line;
+            return;
+        }
+        try {
+            // Use the recalls endpoint as a vehicle-existence probe — it returns
+            // VIN + ownership confirmation as a side effect of the recall check
+            const data = await pwa.fetchJson("/api/v1/vehicles/ZASFAKBN3J7C12345/recalls");
+            $el.textContent = "VIN " + data.vin + " · ownership verified";
+        } catch (e) {
+            $el.textContent = "(failed to fetch — try " +
+                '<a href="?mockup=1">mockup mode</a>)';
+        }
+    };
+</script>
+</body>
+</html>

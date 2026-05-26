@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- Triage rule: P0301 with normal load → ignition coil pattern -->
+    <record id="rule_p0301_coil_pattern" model="alfa_core_diagnosis.triage_rule">
+      <field name="code">P0301_COIL_GIORGIO</field>
+      <field name="name">P0301 — Ignition coil pattern (Giorgio 2.0L)</field>
+      <field name="dtc_pattern">P0301</field>
+      <field name="pid_condition">map_kpa &lt; 100 AND coolant_c &gt; 80</field>
+      <field name="recommended_action">Coil swap diagnostic (TSB DEMO-18-080-21)</field>
+      <field name="confidence_base">0.78</field>
+      <field name="severity">warn</field>
+      <field name="fits_platform_ids" eval="[(4, ref('alfa_fleet.platform_giorgio'))]"/>
+      <field name="fits_engine_ids" eval="[(4, ref('alfa_fleet.engine_gme_2_0t'))]"/>
+    </record>
+
+    <record id="rule_p0507_idle_pattern" model="alfa_core_diagnosis.triage_rule">
+      <field name="code">P0507_IDLE_GIORGIO</field>
+      <field name="name">P0507 — Idle higher than commanded</field>
+      <field name="dtc_pattern">P0507</field>
+      <field name="recommended_action">Inspect throttle body for carbon buildup; check vacuum lines</field>
+      <field name="confidence_base">0.65</field>
+      <field name="severity">info</field>
+      <field name="fits_platform_ids" eval="[(4, ref('alfa_fleet.platform_giorgio'))]"/>
+    </record>
+
+    <!-- John's diagnosis report based on the recent scan -->
+    <record id="report_dangelo_misfire" model="alfa_core_diagnosis.report">
+      <field name="scan_session_id" ref="alfa_core_scanner.scan_session_dangelo_recent"/>
+      <field name="state">reviewed</field>
+      <field name="confidence">0.78</field>
+      <field name="severity">warn</field>
+      <field name="inference_zde" eval="True"/>
+      <field name="summary">Your Stelvio is showing an intermittent misfire on cylinder 1 (DTC P0301) along with slightly elevated idle (P0507). The misfire pattern matches a documented coil-pack issue common on 2017-2019 Giorgio 2.0L engines (TSB DEMO-18-080-21). Recommended next step is a coil-swap diagnostic — a 15-minute procedure that confirms whether the coil is the cause before any parts are replaced.</field>
+      <field name="technical_summary">Freeze frame P0301: RPM 2100, Coolant 92°C, Load 38%, MAP 78kPa — load and temp profile consistent with TSB pattern (NOT lean misfire). P0507 secondary, likely related to fuel trim adaptation during misfire window. Recommended procedure: swap cyl-1 coil with cyl-3, clear codes, 15-min road test including highway segment. If P0301 follows coil to cyl-3, replace with PN 55214664 (current service replacement, supersedes 68189192AA). Do not replace plugs unless visible wear/fouling observed.</field>
+    </record>
+
+    <record id="recommendation_coil_swap_diag" model="alfa_core_diagnosis.recommendation">
+      <field name="report_id" ref="report_dangelo_misfire"/>
+      <field name="name">Coil swap diagnostic</field>
+      <field name="description">Move cylinder 1 ignition coil to cylinder 3; clear codes; 15-minute road test. If misfire follows the coil, confirms coil as root cause.</field>
+      <field name="action_type">test_drive</field>
+      <field name="confidence">0.78</field>
+    </record>
+
+    <record id="recommendation_coil_replace" model="alfa_core_diagnosis.recommendation">
+      <field name="report_id" ref="report_dangelo_misfire"/>
+      <field name="name">Replace ignition coil with PN 55214664</field>
+      <field name="description">If coil swap confirms root cause, replace with current service PN 55214664. Torque coil bolt to 8 Nm.</field>
+      <field name="action_type">replace_part</field>
+      <field name="confidence">0.78</field>
+      <field name="related_part_id" ref="alfa_parts.part_coil_55214664"/>
+    </record>
+
+  </data>
+</odoo>

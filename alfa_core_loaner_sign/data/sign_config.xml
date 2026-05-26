@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!--
+      Placeholder ir.config_parameter rows for the Loaner Sign template.
+      Operators set the real values via:
+        Settings -> Technical -> Parameters -> System Parameters
+
+      `alfa_core_loaner.sign_template_id`   Required. ID of the published
+                                            sign.template that represents
+                                            the loaner agreement.
+      `alfa_core_loaner.sign_signer_role`   Optional. Role name to use for
+                                            the customer signer (default
+                                            "Customer"). The template must
+                                            define a sign role with this name.
+    -->
+    <record id="param_sign_template_id" model="ir.config_parameter">
+      <field name="key">alfa_core_loaner.sign_template_id</field>
+      <field name="value"></field>
+    </record>
+
+    <record id="param_sign_signer_role" model="ir.config_parameter">
+      <field name="key">alfa_core_loaner.sign_signer_role</field>
+      <field name="value">Customer</field>
+    </record>
+
+  </data>
+</odoo>

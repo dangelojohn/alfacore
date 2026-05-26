@@ -1,0 +1,73 @@
+# AlfaCore monorepo configuration — ruff + minimal pylint-odoo
+# Decision §scaffold-Q6: modern fast linter; pylint-odoo for Odoo-specific checks
+
+[project]
+name = "alfacore"
+version = "0.1.0-dev"
+description = "AlfaCore Odoo 19 platform — luxury automotive service for Italian-platform vehicles"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+    "__pycache__",
+    "*.pot",
+    "i18n",
+    ".venv",
+    "venv",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "S",   # flake8-bandit (security)
+    "N",   # pep8-naming
+    "RUF", # ruff-specific
+]
+ignore = [
+    "E501",   # line-too-long — handled by formatter
+    "S101",   # use of assert — needed in Odoo tests
+    "N999",   # invalid module name — Odoo modules use snake_case which is fine
+    "N806",   # non-pep8 local var name — uppercase locals (ICP, RELEASE_ID, …) read as constants in Odoo style
+    "B008",   # function-call-in-default — Odoo fields use field defaults heavily
+    "RUF012", # mutable default class attribute — Odoo Selection fields use list defaults pervasively
+    "RUF001", # ambiguous unicode in strings — em-dashes / × signs in demo data are intentional
+    "RUF002", # ambiguous unicode in docstrings — same as above
+    "RUF005", # collection literal concatenation — not worth churning Odoo-style writes
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__manifest__.py" = ["B018", "UP009"]  # Useless expression (manifests are dicts); utf-8 coding header is Odoo-conventional
+"__init__.py"     = ["F401"]            # Unused imports OK — Odoo auto-discovers via these imports
+"**/tests/*"      = ["S", "B017", "E741", "F841"]  # security + loose assertRaises + ambiguous names + arrangement-clause unused locals are common in tests
+"tools/ci/*"      = ["S314"]            # XML parse over trusted in-repo files only
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# Pylint-odoo for Odoo-specific lints not covered by ruff
+[tool.pylint."MESSAGES CONTROL"]
+load-plugins = "pylint_odoo"
+disable = "all"
+enable = [
+    "manifest-required-author",
+    "manifest-required-key",
+    "manifest-deprecated-key",
+    "method-compute",
+    "method-search",
+    "method-inverse",
+    "missing-readme",
+    "no-utf8-coding-comment",
+    "po-syntax-error",
+    "translation-required",
+    "xml-syntax-error",
+]

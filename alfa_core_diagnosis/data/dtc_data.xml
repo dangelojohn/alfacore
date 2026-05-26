@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="dtc_P0301" model="alfa_core_diagnosis.dtc">
+      <field name="code">P0301</field>
+      <field name="name">Cylinder 1 Misfire</field>
+      <field name="category">powertrain</field>
+      <field name="severity">warn</field>
+      <field name="description_long">The engine is detecting that one cylinder is not firing properly. Common on the GME 2.0L. Most often caused by an aged ignition coil or fouled spark plug. Not immediately dangerous but should be addressed to prevent catalyst damage.</field>
+      <field name="typical_causes">Ignition coil failure · Spark plug fouling · Fuel injector clog · Compression loss</field>
+    </record>
+
+    <record id="dtc_P0507" model="alfa_core_diagnosis.dtc">
+      <field name="code">P0507</field>
+      <field name="name">Idle Air Control RPM Higher than Expected</field>
+      <field name="category">powertrain</field>
+      <field name="severity">info</field>
+      <field name="description_long">The engine is idling faster than expected. Typically a vacuum leak or throttle body issue. Not safety-critical but contributes to fuel consumption.</field>
+      <field name="typical_causes">Vacuum leak · Dirty throttle body · IAC valve issue</field>
+    </record>
+
+    <record id="dtc_C0561" model="alfa_core_diagnosis.dtc">
+      <field name="code">C0561</field>
+      <field name="name">ABS System Disabled</field>
+      <field name="category">chassis</field>
+      <field name="severity">safety_critical</field>
+      <field name="description_long">ABS is disabled. Braking distance will be longer especially in wet conditions. Do not drive aggressively. Contact AlfaCore immediately.</field>
+      <field name="typical_causes">Wheel speed sensor failure · ABS module fault · Wiring harness damage</field>
+    </record>
+
+    <record id="dtc_C1095" model="alfa_core_diagnosis.dtc">
+      <field name="code">C1095</field>
+      <field name="name">Brake Booster Pressure Sensor</field>
+      <field name="category">chassis</field>
+      <field name="severity">safety_critical</field>
+      <field name="description_long">Brake booster pressure sensor failure. The brake pedal may feel harder than usual. Do not drive — request roadside.</field>
+      <field name="typical_causes">Sensor failure · Vacuum hose disconnection · Booster diaphragm leak</field>
+    </record>
+
+    <record id="dtc_P200A" model="alfa_core_diagnosis.dtc">
+      <field name="code">P200A</field>
+      <field name="name">Intake Manifold Runner Performance</field>
+      <field name="category">powertrain</field>
+      <field name="severity">warn</field>
+      <field name="description_long">Intake manifold runner control performance issue. Common on the 2.9 V6 Quadrifoglio. Affects performance under load but not safety.</field>
+    </record>
+
+    <record id="dtc_P0234" model="alfa_core_diagnosis.dtc">
+      <field name="code">P0234</field>
+      <field name="name">Turbocharger Overboost</field>
+      <field name="category">powertrain</field>
+      <field name="severity">severe</field>
+      <field name="description_long">Turbocharger is producing more boost pressure than expected. Continued driving in spirited conditions can damage the turbo or engine internals. Recommend immediate inspection.</field>
+    </record>
+
+  </data>
+</odoo>

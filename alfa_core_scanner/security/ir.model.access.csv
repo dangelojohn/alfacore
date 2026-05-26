@@ -1,0 +1,14 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_device_advisor","device.advisor","model_alfa_core_scanner_device","alfa_core.group_advisor",1,1,1,0
+"access_device_manager","device.manager","model_alfa_core_scanner_device","alfa_core.group_manager",1,1,1,1
+"access_device_portal","device.portal","model_alfa_core_scanner_device","base.group_portal",1,1,0,0
+"access_session_advisor","session.advisor","model_alfa_core_scanner_scan_session","alfa_core.group_advisor",1,1,1,0
+"access_session_manager","session.manager","model_alfa_core_scanner_scan_session","alfa_core.group_manager",1,1,1,1
+"access_session_portal","session.portal","model_alfa_core_scanner_scan_session","base.group_portal",1,1,1,0
+"access_dtc_advisor","dtc.advisor","model_alfa_core_scanner_scan_dtc","alfa_core.group_advisor",1,1,1,0
+"access_dtc_manager","dtc.manager","model_alfa_core_scanner_scan_dtc","alfa_core.group_manager",1,1,1,1
+"access_dtc_portal","dtc.portal","model_alfa_core_scanner_scan_dtc","base.group_portal",1,0,0,0
+"access_pid_advisor","pid.advisor","model_alfa_core_scanner_scan_pid","alfa_core.group_advisor",1,1,1,0
+"access_pid_manager","pid.manager","model_alfa_core_scanner_scan_pid","alfa_core.group_manager",1,1,1,1
+"access_heartbeat_advisor","hb.advisor","model_alfa_core_scanner_heartbeat","alfa_core.group_advisor",1,0,0,0
+"access_heartbeat_manager","hb.manager","model_alfa_core_scanner_heartbeat","alfa_core.group_manager",1,1,1,1

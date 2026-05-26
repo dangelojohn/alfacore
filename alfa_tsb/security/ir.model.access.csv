@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_tsb_user","tsb.user","model_alfa_tsb_tsb","alfa_core.group_user",1,0,0,0
+"access_tsb_advisor","tsb.advisor","model_alfa_tsb_tsb","alfa_core.group_advisor",1,1,1,0
+"access_tsb_manager","tsb.manager","model_alfa_tsb_tsb","alfa_core.group_manager",1,1,1,1
+"access_chunk_advisor","chunk.advisor","model_alfa_tsb_chunk","alfa_core.group_advisor",1,0,0,0
+"access_chunk_manager","chunk.manager","model_alfa_tsb_chunk","alfa_core.group_manager",1,1,1,1
+"access_collection_manager","collection.manager","model_alfa_tsb_qdrant_collection","alfa_core.group_manager",1,1,1,1

@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Bare-bones HTML wrapper for the sim wireframes. We deliberately don't
+    extend `web.frontend_layout` — it expects `main_object` + website-
+    edit-mode context that controller-rendered pages can't satisfy
+    (caused a silent KeyError + 24-byte empty responses for every sim
+    surface). This layout just emits a clean shell + pulls in the
+    frontend asset bundle, which is enough.
+  -->
+  <template id="sim_layout" name="AlfaCore Sim · Bare Layout">
+    &lt;!DOCTYPE html&gt;
+    <html lang="en">
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title><t t-out="head_meta_title or 'AlfaCore Sim'"/></title>
+        <t t-call-assets="web.assets_frontend"/>
+      </head>
+      <body>
+        <t t-out="0"/>
+      </body>
+    </html>
+  </template>
+
+  <!-- =====================================================================
+       Shared layout for journey surfaces (header chrome + Live/Mockup toggle)
+  ===================================================================== -->
+  <template id="journey_layout" name="AlfaCore Sim · Journey Layout">
+    <t t-call="alfa_core_ui_sim.sim_layout">
+      <t t-set="head_meta_title">AlfaCore Sim · <t t-out="surface_slug or 'Journey'"/></t>
+      <div class="ac-sim">
+        <div style="max-width: 1200px; margin: 0 auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <div class="ac-eyebrow">AlfaCore · Journey wireframe</div>
+              <h1 style="margin-top: 4px;"><t t-out="surface_title or 'Surface'"/></h1>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a class="ac-btn ac-btn--ghost" href="/alfacore/sim">← Index</a>
+              <t t-if="mockup">
+                <a class="ac-btn ac-btn--ghost" t-attf-href="/alfacore/sim/journey/{{surface_slug}}">Live data</a>
+              </t>
+              <t t-if="not mockup">
+                <a class="ac-btn ac-btn--ghost" t-attf-href="/alfacore/sim/journey/{{surface_slug}}?mockup=1">Mockup data</a>
+              </t>
+            </div>
+          </div>
+          <t t-out="0"/>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Landing index (3 columns: PWA / Ops / Journey)
+  ===================================================================== -->
+  <template id="landing_index" name="AlfaCore Sim · Landing">
+    <t t-call="alfa_core_ui_sim.sim_layout">
+      <t t-set="head_meta_title">AlfaCore UI Simulation</t>
+      <div class="ac-sim">
+        <div style="max-width: 1200px; margin: 0 auto;">
+          <div class="ac-eyebrow">AlfaCore</div>
+          <h1>UI simulation · v1.0</h1>
+          <p style="color: var(--ac-text-2); max-width: 720px; margin-bottom: 32px;">
+            Twelve surfaces grouped by audience. Click any to open the wireframe — live data by default, append <code>?mockup=1</code> to any URL for clean design-review visuals.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            <div>
+              <h3>PWA · customer</h3>
+              <p style="color: var(--ac-text-3); font-family: var(--ac-font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Standalone HTML+JS · /api/v1/*</p>
+              <t t-foreach="surfaces.get('pwa', [])" t-as="s">
+                <a t-att-href="s.get('url')" class="ac-card" style="display: block; text-decoration: none; color: inherit; margin-bottom: 12px;">
+                  <strong t-out="s.get('name')"/>
+                  <p style="color: var(--ac-text-2); margin: 4px 0 0;" t-out="s.get('summary')"/>
+                </a>
+              </t>
+            </div>
+            <div>
+              <h3>Operations</h3>
+              <p style="color: var(--ac-text-3); font-family: var(--ac-font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">QWeb · gated to AlfaCore staff</p>
+              <t t-foreach="surfaces.get('ops', [])" t-as="s">
+                <a t-att-href="s.get('url')" class="ac-card" style="display: block; text-decoration: none; color: inherit; margin-bottom: 12px;">
+                  <strong t-out="s.get('name')"/>
+                  <p style="color: var(--ac-text-2); margin: 4px 0 0;" t-out="s.get('summary')"/>
+                </a>
+              </t>
+            </div>
+            <div>
+              <h3>Journeys</h3>
+              <p style="color: var(--ac-text-3); font-family: var(--ac-font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Cross-cutting flows</p>
+              <t t-foreach="surfaces.get('journey', [])" t-as="s">
+                <a t-att-href="s.get('url')" class="ac-card" style="display: block; text-decoration: none; color: inherit; margin-bottom: 12px;">
+                  <strong t-out="s.get('name')"/>
+                  <p style="color: var(--ac-text-2); margin: 4px 0 0;" t-out="s.get('summary')"/>
+                </a>
+              </t>
+            </div>
+          </div>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Surface not found
+  ===================================================================== -->
+  <template id="surface_not_found" name="Surface Not Found">
+    <t t-call="alfa_core_ui_sim.sim_layout">
+      <div class="ac-sim" style="text-align: center; padding: 80px 24px;">
+        <div class="ac-eyebrow">Surface not found</div>
+        <h1>404</h1>
+        <p><code t-out="surface"/> is not a known journey surface.</p>
+        <p>Known:</p>
+        <ul style="list-style: none; padding: 0; font-family: var(--ac-font-mono);">
+          <t t-foreach="known" t-as="s">
+            <li><a t-attf-href="/alfacore/sim/journey/{{s}}" t-out="s"/></li>
+          </t>
+        </ul>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Journey 1 — Relationship Tape
+  ===================================================================== -->
+  <template id="relationship_tape" name="Journey · Relationship Tape">
+    <t t-call="alfa_core_ui_sim.journey_layout">
+      <t t-set="surface_title">Relationship tape</t>
+      <t t-set="surface_slug">relationship-tape</t>
+
+      <t t-set="partner" t-value="ctx.get('partner', {})"/>
+      <div class="ac-card" style="margin-bottom: 16px;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 16px;">
+          <div>
+            <div class="ac-eyebrow">Customer</div>
+            <h2 style="margin: 4px 0;" t-out="partner.get('name')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Tier</div>
+            <div><span class="ac-badge ac-badge--spark" t-out="partner.get('tier')"/></div>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Lifetime spend</div>
+            <div class="ac-data-grid__value ac-data-grid__value--mono">
+              $<t t-out="'{:,}'.format(int(partner.get('lifetime_spend', 0) or 0))"/>
+            </div>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Customer since</div>
+            <div class="ac-data-grid__value ac-data-grid__value--mono" t-out="partner.get('since')"/>
+          </div>
+        </div>
+      </div>
+
+      <h3>Timeline</h3>
+      <div class="ac-card">
+        <t t-foreach="ctx.get('events', [])" t-as="event">
+          <div style="display: grid; grid-template-columns: 100px 120px 1fr; gap: 16px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--ac-border);">
+            <div class="ac-data-grid__value ac-data-grid__value--mono"
+                 style="color: var(--ac-text-3);" t-out="event.get('when')"/>
+            <div>
+              <span class="ac-badge ac-badge--primary" t-out="event.get('type')"/>
+            </div>
+            <div>
+              <strong t-out="event.get('title')"/>
+              <div style="color: var(--ac-text-2); margin-top: 2px;" t-out="event.get('detail')"/>
+            </div>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Journey 2 — Blueprint Authoring
+  ===================================================================== -->
+  <template id="blueprint_authoring" name="Journey · Blueprint Authoring">
+    <t t-call="alfa_core_ui_sim.journey_layout">
+      <t t-set="surface_title">Inspection blueprint authoring</t>
+      <t t-set="surface_slug">blueprint-authoring</t>
+
+      <t t-set="focal" t-value="ctx.get('focal', {})"/>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px;">
+        <div class="ac-card">
+          <div class="ac-eyebrow">Published templates</div>
+          <h3 style="margin-top: 4px;">Library</h3>
+          <t t-foreach="ctx.get('templates', [])" t-as="t">
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--ac-border);">
+              <strong t-out="t.get('name')"/>
+              <div style="color: var(--ac-text-3); font-family: var(--ac-font-mono); font-size: 12px;">
+                <t t-out="t.get('code')"/> · v<t t-out="t.get('version')"/> · <t t-out="t.get('item_count')"/> items
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div class="ac-card">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <div class="ac-eyebrow">Editing</div>
+              <h2 style="margin: 4px 0;" t-out="focal.get('name')"/>
+              <div style="color: var(--ac-text-3); font-family: var(--ac-font-mono); font-size: 12px;">
+                <t t-out="focal.get('code')"/> · v<t t-out="focal.get('version')"/> · <t t-out="focal.get('duration_min')"/>min
+              </div>
+            </div>
+            <div>
+              <a class="ac-btn" href="#">Save draft</a>
+              <a class="ac-btn ac-btn--primary" href="#">Publish next version</a>
+            </div>
+          </div>
+          <p style="color: var(--ac-text-2); margin-top: 12px;" t-out="focal.get('description')"/>
+
+          <h4 style="margin-top: 24px;">Items</h4>
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--ac-border-strong);">
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">#</th>
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Name</th>
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Category</th>
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Type</th>
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Safety</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="focal.get('items', [])" t-as="item">
+                <tr style="border-bottom: 1px solid var(--ac-border);">
+                  <td style="padding: 10px 8px; font-family: var(--ac-font-mono); color: var(--ac-text-3);" t-out="item.get('sequence')"/>
+                  <td style="padding: 10px 8px;" t-out="item.get('name')"/>
+                  <td style="padding: 10px 8px;"><span class="ac-badge" t-out="item.get('category')"/></td>
+                  <td style="padding: 10px 8px; font-family: var(--ac-font-mono); font-size: 12px; color: var(--ac-text-2);" t-out="item.get('measurement_type')"/>
+                  <td style="padding: 10px 8px;">
+                    <span t-if="item.get('is_safety_critical')" class="ac-badge ac-badge--safety">critical</span>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Journey 3 — Configurator
+  ===================================================================== -->
+  <template id="journey_configurator" name="Journey · Configurator Cascade">
+    <t t-call="alfa_core_ui_sim.journey_layout">
+      <t t-set="surface_title">Configurator cascade</t>
+      <t t-set="surface_slug">configurator</t>
+
+      <t t-set="session" t-value="ctx.get('session', {})"/>
+      <div class="ac-card" style="margin-bottom: 16px;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px;">
+          <div>
+            <div class="ac-eyebrow">Active session</div>
+            <h2 style="margin: 4px 0;" t-out="session.get('name')"/>
+            <div style="color: var(--ac-text-2);" t-out="session.get('vehicle')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Blueprint</div>
+            <div class="ac-data-grid__value ac-data-grid__value--mono" t-out="session.get('blueprint')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">State</div>
+            <div><span class="ac-badge ac-badge--spark" t-out="session.get('state')"/></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="ac-card">
+          <div class="ac-eyebrow">Recommendation signals</div>
+          <h3 style="margin-top: 4px;">Inputs</h3>
+          <t t-foreach="ctx.get('signals', [])" t-as="s">
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--ac-border);">
+              <div style="display: flex; justify-content: space-between;">
+                <span class="ac-badge ac-badge--cyan" t-out="s.get('type')"/>
+                <span class="ac-data-grid__value--mono" style="color: var(--ac-text-2);">
+                  w=<t t-out="s.get('weight')"/> · c=<t t-out="s.get('confidence')"/>
+                </span>
+              </div>
+              <div style="color: var(--ac-text-3); margin-top: 4px; font-family: var(--ac-font-mono); font-size: 12px;" t-out="s.get('source')"/>
+            </div>
+          </t>
+        </div>
+
+        <div class="ac-card">
+          <div class="ac-eyebrow">Benefit ledger · latest 15</div>
+          <h3 style="margin-top: 4px;">Audit trail</h3>
+          <t t-foreach="ctx.get('ledger', [])" t-as="l">
+            <div style="padding: 8px 0; border-bottom: 1px solid var(--ac-border); font-family: var(--ac-font-mono); font-size: 12px;">
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <span class="ac-badge ac-badge--primary" t-out="l.get('type')"/>
+                <strong t-out="l.get('name')"/>
+              </div>
+              <div style="color: var(--ac-text-2); margin-top: 4px;" t-out="l.get('explanation')"/>
+            </div>
+          </t>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Journey 4 — Safety-Critical Path
+  ===================================================================== -->
+  <template id="safety_critical" name="Journey · Safety-Critical">
+    <t t-call="alfa_core_ui_sim.journey_layout">
+      <t t-set="surface_title">Safety-critical recall · acknowledge flow</t>
+      <t t-set="surface_slug">safety-critical</t>
+
+      <t t-set="camp" t-value="ctx.get('campaign', {})"/>
+      <div class="ac-card" style="margin-bottom: 16px; border-left: 4px solid var(--ac-safety-crit);">
+        <div style="display: flex; align-items: start; gap: 16px;">
+          <span class="ac-badge ac-badge--safety" style="font-size: 13px; padding: 6px 12px;">DO NOT DRIVE</span>
+          <div style="flex: 1;">
+            <h2 style="margin: 0 0 4px 0;" t-out="camp.get('name')"/>
+            <div style="font-family: var(--ac-font-mono); font-size: 12px; color: var(--ac-text-3);">
+              Campaign <t t-out="camp.get('source_id')"/> · <t t-out="camp.get('affected_components')"/>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div class="ac-data-grid__label">Risk</div>
+          <p style="margin: 4px 0;" t-out="camp.get('risk_summary')"/>
+        </div>
+        <div style="margin-top: 16px;">
+          <div class="ac-data-grid__label">Remedy</div>
+          <p style="margin: 4px 0; white-space: pre-line;" t-out="camp.get('remedy_summary')"/>
+        </div>
+      </div>
+
+      <h3>Affected customers · contact attempts</h3>
+      <div class="ac-card">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--ac-border-strong);">
+              <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Vehicle</th>
+              <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Customer</th>
+              <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">State</th>
+              <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; color: var(--ac-text-3); text-transform: uppercase;">Attempts</th>
+              <th style="padding: 8px;"/>
+            </tr>
+          </thead>
+          <tbody>
+            <t t-foreach="ctx.get('targets', [])" t-as="t">
+              <tr style="border-bottom: 1px solid var(--ac-border);">
+                <td style="padding: 12px 8px;" t-out="t.get('vehicle')"/>
+                <td style="padding: 12px 8px; font-weight: 600;" t-out="t.get('partner')"/>
+                <td style="padding: 12px 8px;"><span class="ac-badge ac-badge--warn" t-out="t.get('state')"/></td>
+                <td style="padding: 12px 8px; font-family: var(--ac-font-mono);" t-out="t.get('attempts')"/>
+                <td style="padding: 12px 8px;">
+                  <a class="ac-btn ac-btn--spark" href="#">Re-notify</a>
+                </td>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+      </div>
+    </t>
+  </template>
+</odoo>

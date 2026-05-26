@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- Eligibility rule: track-day inspection requires Pro tier -->
+    <record id="rule_track_prep_pro_only" model="alfa_core_configurator.eligibility_rule">
+      <field name="name">Track Prep inspection — Pro tier only</field>
+      <field name="code">track_prep_pro_required</field>
+      <field name="blueprint_code">spring_service</field>
+      <field name="rule_action">hide</field>
+      <field name="option_value">track_prep_inspection</field>
+      <field name="domain_expression">[('subscription_id.plan_id.code', '!=', 'pro')]</field>
+    </record>
+
+    <!-- Eligibility rule: loaner included for Premium+ -->
+    <record id="rule_loaner_premium_plus" model="alfa_core_configurator.eligibility_rule">
+      <field name="name">Loaner included — Premium &amp; Pro</field>
+      <field name="code">loaner_premium_plus</field>
+      <field name="blueprint_code">spring_service</field>
+      <field name="rule_action">recommend</field>
+      <field name="option_value">complimentary_loaner</field>
+      <field name="domain_expression">[('subscription_id.plan_id.code', 'in', ['premium', 'pro'])]</field>
+    </record>
+
+    <!-- Active configurator session for John's spring service -->
+    <record id="session_dangelo_spring" model="alfa_core_configurator.session">
+      <field name="vehicle_id" ref="alfa_fleet.vehicle_dangelo_stelvio"/>
+      <field name="subscription_id" ref="alfa_core.subscription_dangelo_premium"/>
+      <field name="blueprint_code">spring_service</field>
+      <field name="state">active</field>
+      <field name="selected_options_json">{"spring_readiness_inspection": true, "complimentary_loaner": true, "track_prep_inspection": false}</field>
+    </record>
+
+    <!-- Signals feeding the session -->
+    <record id="signal_dangelo_mileage" model="alfa_core_configurator.signal">
+      <field name="session_id" ref="session_dangelo_spring"/>
+      <field name="signal_type">mileage_interval</field>
+      <field name="name">Mileage interval reached (89247 km)</field>
+      <field name="weight">0.85</field>
+      <field name="confidence">0.95</field>
+      <field name="source_reference">vehicle_dangelo_stelvio.last_mileage_km=89247</field>
+      <field name="captured_at" eval="DateTime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <record id="signal_dangelo_dtc" model="alfa_core_configurator.signal">
+      <field name="session_id" ref="session_dangelo_spring"/>
+      <field name="signal_type">dtc</field>
+      <field name="name">DTC P0301 + P0507 from recent scan</field>
+      <field name="weight">0.78</field>
+      <field name="confidence">0.78</field>
+      <field name="source_reference">scan_session_dangelo_recent: P0301, P0507</field>
+      <field name="captured_at" eval="(DateTime.now() - timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <record id="signal_dangelo_season" model="alfa_core_configurator.signal">
+      <field name="session_id" ref="session_dangelo_spring"/>
+      <field name="signal_type">season</field>
+      <field name="name">Post-winter spring readiness window</field>
+      <field name="weight">0.55</field>
+      <field name="confidence">0.95</field>
+      <field name="source_reference">post-winter spring readiness window</field>
+      <field name="captured_at" eval="DateTime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+  </data>
+</odoo>

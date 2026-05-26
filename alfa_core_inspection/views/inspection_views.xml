@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Inspection Template -->
+  <record id="view_template_list" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.template.list</field>
+    <field name="model">alfa_core_inspection.template</field>
+    <field name="arch" type="xml">
+      <list decoration-success="state == 'published'"
+            decoration-muted="state == 'retired'">
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="version"/>
+        <field name="item_count"/>
+        <field name="estimated_duration_minutes"/>
+        <field name="state" widget="badge"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_template_form" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.template.form</field>
+    <field name="model">alfa_core_inspection.template</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_publish" type="object" string="Publish"
+                  class="btn-primary" invisible="state != 'draft'"/>
+          <button name="action_retire" type="object" string="Retire"
+                  invisible="state != 'published'"
+                  confirm="Retire this template? Existing inspections continue; new ones can't reference it."/>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <label for="name"/>
+            <h1><field name="name" placeholder="e.g. Pre-purchase 100-point"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="code"/>
+              <field name="version"/>
+              <field name="estimated_duration_minutes"/>
+              <field name="requires_lift"/>
+            </group>
+            <group>
+              <field name="fits_platform_ids" widget="many2many_tags"/>
+              <field name="item_count" readonly="1"/>
+              <field name="active"/>
+            </group>
+          </group>
+          <field name="description" placeholder="Describe this inspection..."/>
+          <notebook>
+            <page string="Items">
+              <field name="item_ids">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="category"/>
+                  <field name="name"/>
+                  <field name="measurement_type"/>
+                  <field name="measurement_units"/>
+                  <field name="threshold_pass" optional="hide"/>
+                  <field name="threshold_warn" optional="hide"/>
+                  <field name="is_safety_critical" widget="boolean_toggle"/>
+                </list>
+                <form>
+                  <sheet>
+                    <group>
+                      <group>
+                        <field name="name"/>
+                        <field name="category"/>
+                        <field name="measurement_type"/>
+                        <field name="measurement_units"
+                               invisible="measurement_type != 'measurement'"/>
+                      </group>
+                      <group>
+                        <field name="threshold_pass"
+                               invisible="measurement_type != 'measurement'"/>
+                        <field name="threshold_warn"
+                               invisible="measurement_type != 'measurement'"/>
+                        <field name="is_safety_critical"/>
+                      </group>
+                    </group>
+                    <field name="description"/>
+                  </sheet>
+                </form>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_template" model="ir.actions.act_window">
+    <field name="name">Inspection Templates</field>
+    <field name="res_model">alfa_core_inspection.template</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <!-- Inspection -->
+  <record id="view_inspection_list" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.inspection.list</field>
+    <field name="model">alfa_core_inspection.inspection</field>
+    <field name="arch" type="xml">
+      <list decoration-info="state == 'in_progress'"
+            decoration-warning="state == 'customer_review'"
+            decoration-success="state in ('approved','applied')"
+            decoration-danger="safety_critical_fail"
+            decoration-muted="state == 'cancelled'">
+        <field name="name"/>
+        <field name="template_id"/>
+        <field name="vehicle_id"/>
+        <field name="technician_id"/>
+        <field name="finding_pass_count"/>
+        <field name="finding_warn_count"/>
+        <field name="finding_fail_count"/>
+        <field name="safety_critical_fail" widget="boolean" invisible="1"/>
+        <field name="estimated_remediation_total" widget="monetary"/>
+        <field name="state" widget="badge"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_inspection_form" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.inspection.form</field>
+    <field name="model">alfa_core_inspection.inspection</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_start" type="object" string="Start Inspection"
+                  class="btn-primary" invisible="state != 'draft'"/>
+          <button name="action_submit_for_review" type="object" string="Submit for Review"
+                  class="btn-primary" invisible="state != 'in_progress'"/>
+          <button name="action_send_to_customer" type="object" string="Send to Customer"
+                  class="btn-primary" invisible="state != 'pending_review'"/>
+          <button name="action_record_customer_decision" type="object"
+                  string="Record Customer Decision"
+                  invisible="state != 'customer_review'"/>
+          <button name="action_apply_to_so" type="object" string="Apply to SO"
+                  class="btn-primary"
+                  invisible="state not in ('approved','partially_approved')"/>
+          <button name="action_cancel" type="object" string="Cancel"
+                  confirm="Cancel this inspection?"
+                  invisible="state in ('applied','cancelled')"/>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="alert alert-danger" role="alert" invisible="not safety_critical_fail">
+            <strong>Safety-critical failure detected.</strong>
+            One or more safety-critical items failed. Vehicle should not be released without remediation.
+          </div>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" type="action" icon="fa-list"
+                    invisible="1">
+              <field name="finding_count" widget="statinfo" string="Findings"/>
+            </button>
+          </div>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="template_id"
+                     options="{'no_create': True}"/>
+              <field name="template_version" readonly="1"/>
+              <field name="vehicle_id"/>
+              <field name="sale_order_id"/>
+            </group>
+            <group>
+              <field name="technician_id"/>
+              <field name="bay_id"/>
+              <field name="started_at" readonly="1"/>
+              <field name="completed_at" readonly="1"/>
+              <field name="customer_reviewed_at" readonly="1"/>
+              <field name="inference_zde"/>
+            </group>
+          </group>
+          <group string="Findings Summary">
+            <group>
+              <field name="finding_count" readonly="1"/>
+              <field name="finding_pass_count" readonly="1"/>
+              <field name="finding_warn_count" readonly="1"/>
+              <field name="finding_fail_count" readonly="1"/>
+            </group>
+            <group>
+              <field name="estimated_remediation_total" widget="monetary"/>
+              <field name="approved_remediation_total" widget="monetary"/>
+              <field name="currency_id" invisible="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Findings">
+              <field name="finding_ids">
+                <list editable="bottom" decoration-warning="state == 'warn'"
+                      decoration-danger="state == 'fail'"
+                      decoration-success="state == 'pass'">
+                  <field name="sequence" widget="handle"/>
+                  <field name="category"/>
+                  <field name="name"/>
+                  <field name="measurement_type"/>
+                  <field name="measurement_value"
+                         invisible="measurement_type != 'measurement'"/>
+                  <field name="measurement_units"
+                         invisible="measurement_type != 'measurement'"/>
+                  <field name="state" widget="badge"/>
+                  <field name="is_safety_critical" widget="boolean_toggle"/>
+                  <field name="remediation_cost" widget="monetary"/>
+                  <field name="customer_decision" widget="badge"
+                         invisible="state == 'pass'"/>
+                </list>
+                <form>
+                  <sheet>
+                    <group>
+                      <group>
+                        <field name="name"/>
+                        <field name="category"/>
+                        <field name="measurement_type"/>
+                        <field name="measurement_value"
+                               invisible="measurement_type != 'measurement'"/>
+                        <field name="measurement_units"
+                               invisible="measurement_type != 'measurement'"/>
+                      </group>
+                      <group>
+                        <field name="state"/>
+                        <field name="is_safety_critical"/>
+                        <field name="remediation_urgency"/>
+                      </group>
+                    </group>
+                    <field name="note" placeholder="Technician notes..."/>
+                    <field name="photo" widget="image"
+                           invisible="measurement_type != 'photo'"/>
+                    <group string="Remediation" invisible="state not in ('warn','fail')">
+                      <group>
+                        <field name="remediation_cost" widget="monetary"/>
+                        <field name="remediation_part_id"/>
+                        <field name="remediation_kit_id"/>
+                      </group>
+                      <group>
+                        <field name="customer_decision"/>
+                        <field name="customer_decision_at" readonly="1"/>
+                      </group>
+                      <field name="remediation_recommended" colspan="2"/>
+                      <field name="customer_decision_note" colspan="2"/>
+                    </group>
+                  </sheet>
+                </form>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_inspection_kanban" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.inspection.kanban</field>
+    <field name="model">alfa_core_inspection.inspection</field>
+    <field name="arch" type="xml">
+      <kanban default_group_by="state">
+        <field name="name"/>
+        <field name="vehicle_id"/>
+        <field name="technician_id"/>
+        <field name="state"/>
+        <field name="safety_critical_fail"/>
+        <templates>
+          <t t-name="card">
+            <div class="o_kanban_card_content">
+              <strong><field name="name"/></strong>
+              <div><field name="vehicle_id"/></div>
+              <div class="text-muted small mt-1">
+                <field name="technician_id"/>
+              </div>
+              <div t-if="record.safety_critical_fail.raw_value" class="text-danger small mt-1">
+                <strong>⚠ Safety-critical</strong>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <record id="action_inspection" model="ir.actions.act_window">
+    <field name="name">Inspections</field>
+    <field name="res_model">alfa_core_inspection.inspection</field>
+    <field name="view_mode">kanban,list,form</field>
+  </record>
+
+  <!-- SO inheritance -->
+  <record id="view_sale_order_form_inspection" model="ir.ui.view">
+    <field name="name">sale.order.form.inspection</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[@name='button_box']" position="inside">
+        <button name="action_view_inspections" type="object"
+                class="oe_stat_button" icon="fa-clipboard-check">
+          <field name="inspection_count" widget="statinfo" string="Inspections"/>
+        </button>
+      </xpath>
+    </field>
+  </record>
+
+  <!-- Menus -->
+  <menuitem id="menu_inspections" name="Inspections"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_inspection" sequence="60"/>
+  <menuitem id="menu_inspection_templates" name="Inspection Templates"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_template" sequence="85"/>
+
+</odoo>

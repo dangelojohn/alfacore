@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="plan_basic" model="alfa_core.subscription.plan">
+      <field name="name">Basic</field>
+      <field name="code">basic</field>
+      <field name="sequence">10</field>
+      <field name="monthly_price">9.00</field>
+      <field name="annual_price">90.00</field>
+      <field name="inference_zde_default" eval="True"/>
+      <field name="description">Entry tier: scanner, scan history, plain-English diagnosis, parts catalog access.</field>
+      <field name="color">#888888</field>
+    </record>
+
+    <record id="plan_premium" model="alfa_core.subscription.plan">
+      <field name="name">Premium</field>
+      <field name="code">premium</field>
+      <field name="sequence">20</field>
+      <field name="monthly_price">24.00</field>
+      <field name="annual_price">240.00</field>
+      <field name="inference_zde_default" eval="True"/>
+      <field name="description">Adds priority booking, loaner allocation (Stelvio-class), concierge pickup/delivery, structured inspection findings.</field>
+      <field name="color">#00B4D8</field>
+    </record>
+
+    <record id="plan_pro" model="alfa_core.subscription.plan">
+      <field name="name">Pro</field>
+      <field name="code">pro</field>
+      <field name="sequence">30</field>
+      <field name="monthly_price">59.00</field>
+      <field name="annual_price">590.00</field>
+      <field name="inference_zde_default" eval="True"/>
+      <field name="description">Adds Pro-tier technician review on every diagnosis, OBDLink MX+ scanner upgrade, track-day support, opt-in LLM polish on diagnosis.</field>
+      <field name="color">#F58220</field>
+    </record>
+
+  </data>
+</odoo>

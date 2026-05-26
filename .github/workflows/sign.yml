@@ -1,0 +1,89 @@
+name: sign
+on:
+  push:
+    tags: ["v*"]
+
+# Sign the module tarball with Cosign and publish as a GitHub Release.
+# The Release assets are what the addon-loader init-container fetches
+# at pod-start time — see addon-loader/README.md.
+#
+# Required GitHub repo secrets:
+#   ALFACORE_COSIGN_KEY       — contents of alfacore.cosign.key (private key)
+#   ALFACORE_COSIGN_PASSWORD  — password for the private key
+#
+# GITHUB_TOKEN is provided automatically by Actions and has the right
+# scope for `gh release create` on this repo. No additional PAT needed.
+
+jobs:
+  cosign-sign:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # required for `gh release create`
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+
+      - name: Package each module + the full bundle
+        run: |
+          mkdir -p dist
+          # Per-module tarballs (allow selective install)
+          for mod in alfa_*; do
+            if [ -d "$mod" ]; then
+              tar -czf "dist/${mod}-${{ github.ref_name }}.tar.gz" "$mod"
+            fi
+          done
+          # Full bundle (what the addon-loader fetches)
+          tar -czf "dist/alfacore-modules-${{ github.ref_name }}.tar.gz" alfa_*
+
+      - name: Sign every artifact
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.ALFACORE_COSIGN_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.ALFACORE_COSIGN_PASSWORD }}
+        run: |
+          for f in dist/*.tar.gz; do
+            cosign sign-blob --yes \
+              --key env://COSIGN_PRIVATE_KEY \
+              --output-signature "${f}.sig" \
+              "$f"
+          done
+          # Sanity-check: verify everything we just signed against the
+          # committed public key. Catches the case where the secret was
+          # rotated but pubkey wasn't committed.
+          for f in dist/*.tar.gz; do
+            cosign verify-blob \
+              --key alfacore.cosign.pub \
+              --signature "${f}.sig" \
+              "$f"
+          done
+
+      - name: Generate SHA-256 checksums
+        run: |
+          cd dist
+          sha256sum *.tar.gz *.sig > SHA256SUMS
+
+      - name: Create GitHub Release and upload signed assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # gh release create is idempotent on the tag: if it already
+          # exists, fall back to `gh release upload --clobber`. This makes
+          # re-running the workflow safe.
+          if gh release view "${{ github.ref_name }}" >/dev/null 2>&1; then
+            echo "Release ${{ github.ref_name }} already exists; uploading assets."
+            gh release upload "${{ github.ref_name }}" --clobber \
+              dist/*.tar.gz dist/*.sig dist/SHA256SUMS
+          else
+            gh release create "${{ github.ref_name }}" \
+              --title "${{ github.ref_name }}" \
+              --notes "AlfaCore signed release ${{ github.ref_name }}. Signatures verify against alfacore.cosign.pub at the repo root." \
+              dist/*.tar.gz dist/*.sig dist/SHA256SUMS
+          fi
+
+      - name: Upload to Actions artifacts (retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: alfacore-signed-${{ github.ref_name }}
+          path: dist/
+          retention-days: 90

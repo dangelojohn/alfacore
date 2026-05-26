@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Add AlfaCore tiles to /my landing -->
+  <template id="portal_my_home_alfa" name="AlfaCore Portal Home"
+            inherit_id="portal.portal_my_home" priority="30">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">My Vehicles</t>
+        <t t-set="url" t-value="'/my/vehicles'"/>
+        <t t-set="placeholder_count" t-value="'vehicle_count'"/>
+        <t t-set="icon" t-value="'/alfa_core_portal/static/src/img/vehicle.svg'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Diagnoses</t>
+        <t t-set="url" t-value="'/my/diagnoses'"/>
+        <t t-set="placeholder_count" t-value="'diagnosis_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Inspections</t>
+        <t t-set="url" t-value="'/my/inspections'"/>
+        <t t-set="placeholder_count" t-value="'inspection_pending_count'"/>
+      </t>
+      <t t-call="portal.portal_docs_entry">
+        <t t-set="title">Loaners</t>
+        <t t-set="url" t-value="'/my/loaners'"/>
+        <t t-set="placeholder_count" t-value="'loaner_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- /my/vehicles list -->
+  <template id="portal_my_vehicles" name="My Vehicles">
+    <t t-call="portal.portal_layout">
+      <t t-set="breadcrumbs_searchbar" t-value="True"/>
+      <t t-call="portal.portal_searchbar">
+        <t t-set="title">My Vehicles</t>
+      </t>
+      <t t-if="not vehicles">
+        <p>You have no AlfaCore-registered vehicles yet.</p>
+      </t>
+      <div t-if="vehicles" class="o_portal_my_doc_table">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Vehicle</th>
+              <th>VIN</th>
+              <th>Mileage</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="vehicles" t-as="vehicle">
+              <td>
+                <a t-att-href="'/my/vehicles/%s' % vehicle.id"
+                   t-out="vehicle.display_name"/>
+              </td>
+              <td class="text-muted small font-monospace" t-out="vehicle.vin"/>
+              <td t-out="vehicle.last_mileage_km"/>
+              <td><span class="badge text-bg-secondary" t-out="vehicle.state"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div t-call="portal.pager"/>
+    </t>
+  </template>
+
+  <!-- /my/vehicles/<id> — Digital Garage -->
+  <template id="portal_my_vehicle_detail" name="Vehicle Detail">
+    <t t-call="portal.portal_layout">
+      <h3 t-out="vehicle.display_name"/>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <table class="table">
+            <tr><th>VIN</th><td t-out="vehicle.vin"/></tr>
+            <tr><th>Year</th><td t-out="vehicle.year"/></tr>
+            <tr><th>Platform</th><td t-out="vehicle.platform_id.name"/></tr>
+            <tr><th>Engine</th><td t-out="vehicle.engine_id.name"/></tr>
+            <tr><th>Trim</th><td t-out="vehicle.trim_id.name"/></tr>
+            <tr><th>Color</th><td t-out="vehicle.color"/></tr>
+            <tr><th>Mileage</th><td t-out="vehicle.last_mileage_km"/> km</tr>
+            <tr><th>License Plate</th><td t-out="vehicle.license_plate"/></tr>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h5>Preferences</h5>
+          <table class="table table-sm">
+            <tr t-foreach="vehicle.preference_ids" t-as="pref">
+              <td t-out="pref.category"/>
+              <td><strong t-out="pref.name"/></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- /my/diagnoses list -->
+  <template id="portal_my_diagnoses" name="My Diagnoses">
+    <t t-call="portal.portal_layout">
+      <t t-call="portal.portal_searchbar">
+        <t t-set="title">Diagnoses</t>
+      </t>
+      <t t-if="not reports">
+        <p>No diagnoses yet.</p>
+      </t>
+      <div t-if="reports">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Vehicle</th>
+              <th>Date</th>
+              <th>Severity</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="reports" t-as="report">
+              <td>
+                <a t-att-href="'/my/diagnoses/%s' % report.id" t-out="report.name"/>
+              </td>
+              <td t-out="report.vehicle_id.display_name"/>
+              <td t-out="report.create_date"/>
+              <td><span class="badge text-bg-warning" t-out="report.severity"/></td>
+              <td><t t-out="round(report.confidence * 100)"/>%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div t-call="portal.pager"/>
+    </t>
+  </template>
+
+  <!-- /my/diagnoses/<id> -->
+  <template id="portal_my_diagnosis_detail" name="Diagnosis Detail">
+    <t t-call="portal.portal_layout">
+      <h3 t-out="report.name"/>
+      <div t-if="report.severity == 'safety_critical'" class="alert alert-danger">
+        <strong>Safety-critical finding.</strong> Please do not drive this vehicle. Contact AlfaCore immediately.
+      </div>
+      <h5>Summary</h5>
+      <p t-out="report.summary"/>
+      <h5>Recommendations</h5>
+      <ul>
+        <li t-foreach="report.recommendation_ids" t-as="rec">
+          <strong t-out="rec.name"/> — <span t-out="rec.description"/>
+        </li>
+      </ul>
+    </t>
+  </template>
+
+  <!-- /my/inspections list -->
+  <template id="portal_my_inspections" name="My Inspections">
+    <t t-call="portal.portal_layout">
+      <t t-call="portal.portal_searchbar">
+        <t t-set="title">Inspections</t>
+      </t>
+      <t t-if="not inspections">
+        <p>No inspections yet.</p>
+      </t>
+      <div t-if="inspections">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Vehicle</th>
+              <th>Date</th>
+              <th>Pass</th>
+              <th>Warn</th>
+              <th>Fail</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="inspections" t-as="ins">
+              <td>
+                <a t-att-href="'/my/inspections/%s' % ins.id" t-out="ins.name"/>
+              </td>
+              <td t-out="ins.vehicle_id.display_name"/>
+              <td t-out="ins.completed_at"/>
+              <td class="text-success" t-out="ins.finding_pass_count"/>
+              <td class="text-warning" t-out="ins.finding_warn_count"/>
+              <td class="text-danger" t-out="ins.finding_fail_count"/>
+              <td><span class="badge text-bg-secondary" t-out="ins.state"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div t-call="portal.pager"/>
+    </t>
+  </template>
+
+  <!-- /my/inspections/<id> -->
+  <template id="portal_my_inspection_detail" name="Inspection Detail">
+    <t t-call="portal.portal_layout">
+      <h3 t-out="inspection.name"/>
+      <p t-out="inspection.vehicle_id.display_name"/>
+
+      <t t-if="inspection.state == 'customer_review'">
+        <div class="alert alert-info">
+          Please review and decide on each finding below.
+        </div>
+        <form t-att-action="'/my/inspections/%s/decide' % inspection.id" method="POST">
+          <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Finding</th>
+                <th>Status</th>
+                <th>Cost</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="inspection.finding_ids.filtered(lambda f: f.state in ('warn','fail'))"
+                  t-as="finding">
+                <td>
+                  <strong t-out="finding.name"/>
+                  <p class="text-muted small mb-0" t-out="finding.remediation_recommended"/>
+                </td>
+                <td><span class="badge text-bg-warning" t-out="finding.state"/></td>
+                <td>$<t t-out="round(finding.remediation_cost, 2)"/></td>
+                <td>
+                  <select t-att-name="'finding_' + str(finding.id)" class="form-select form-select-sm">
+                    <option value="pending">— select —</option>
+                    <option value="approved">Approve</option>
+                    <option value="declined">Decline</option>
+                    <option value="defer">Defer to later</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="submit" class="btn btn-primary">Submit Decisions</button>
+        </form>
+      </t>
+
+      <t t-if="inspection.state != 'customer_review'">
+        <table class="table">
+          <thead>
+            <tr><th>Finding</th><th>Status</th><th>Your Decision</th></tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="inspection.finding_ids" t-as="finding">
+              <td t-out="finding.name"/>
+              <td><span class="badge text-bg-secondary" t-out="finding.state"/></td>
+              <td t-out="finding.customer_decision"/>
+            </tr>
+          </tbody>
+        </table>
+      </t>
+    </t>
+  </template>
+
+  <!-- /my/loaners -->
+  <template id="portal_my_loaners" name="My Loaners">
+    <t t-call="portal.portal_layout">
+      <t t-call="portal.portal_searchbar">
+        <t t-set="title">Loaners</t>
+      </t>
+      <t t-if="not allocations">
+        <p>No loaner allocations yet.</p>
+      </t>
+      <div t-if="allocations">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Vehicle</th>
+              <th>Pickup</th>
+              <th>Return</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr t-foreach="allocations" t-as="a">
+              <td t-out="a.name"/>
+              <td t-out="a.loaner_vehicle_id.name"/>
+              <td t-out="a.pickup_date"/>
+              <td t-out="a.scheduled_return_date"/>
+              <td><span class="badge text-bg-secondary" t-out="a.state"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </t>
+  </template>
+
+</odoo>

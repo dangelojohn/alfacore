@@ -1,0 +1,36 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "AlfaCore — Luxury Automotive Service Platform",
+    "version": "19.0.1.0.0",
+    "category": "Services/AlfaCore",
+    "summary": "Application anchor — partner extensions, PIPEDA consent, subscriptions, settings, top-level menu",
+    "author": "REAL Partners Ltd. / OdooIQ",
+    "website": "https://odooiq.com",
+    "license": "LGPL-3",
+    "depends": [
+        "base",
+        "mail",
+        "portal",
+        "account",
+        "sale_management",
+    ],
+    "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/sequences.xml",
+        "data/pipeda_data.xml",
+        "views/subscription_plan_views.xml",
+        "views/subscription_views.xml",
+        "views/res_partner_views.xml",
+        "views/menus.xml",
+    ],
+    "demo": [
+        "demo/subscription_plan_demo.xml",
+        "demo/tier_benefit_demo.xml",
+        "demo/partner_demo.xml",
+        "demo/subscription_demo.xml",
+    ],
+    "installable": True,
+    "application": True,
+    "external_dependencies": {"python": ["pyjwt"]},
+}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_subscription_list" model="ir.ui.view">
+    <field name="name">alfa_core.subscription.list</field>
+    <field name="model">alfa_core.subscription</field>
+    <field name="arch" type="xml">
+      <list string="Subscriptions" decoration-success="state == 'active'"
+            decoration-warning="state == 'past_due'"
+            decoration-muted="state in ('cancelled','expired')">
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="plan_id"/>
+        <field name="start_date"/>
+        <field name="end_date"/>
+        <field name="state" widget="badge"
+               decoration-info="state == 'trial'"
+               decoration-success="state == 'active'"
+               decoration-warning="state == 'past_due'"
+               decoration-danger="state == 'cancelled'"
+               decoration-muted="state == 'expired'"/>
+        <field name="inference_zde" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_subscription_form" model="ir.ui.view">
+    <field name="name">alfa_core.subscription.form</field>
+    <field name="model">alfa_core.subscription</field>
+    <field name="arch" type="xml">
+      <form string="Subscription">
+        <header>
+          <button name="action_activate" type="object" string="Activate"
+                  class="btn-primary" invisible="state not in ('trial', 'past_due')"/>
+          <button name="action_mark_past_due" type="object" string="Mark Past Due"
+                  invisible="state != 'active'"/>
+          <button name="action_cancel" type="object" string="Cancel"
+                  confirm="Cancel this subscription? This is reversible only by re-creating."
+                  invisible="state in ('cancelled','expired')"/>
+          <button name="action_expire" type="object" string="Expire"
+                  invisible="state in ('cancelled','expired')"/>
+          <field name="state" widget="statusbar"
+                 statusbar_visible="trial,active,past_due,cancelled,expired"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="partner_id"/>
+              <field name="plan_id"/>
+              <field name="sale_order_id"/>
+            </group>
+            <group>
+              <field name="start_date"/>
+              <field name="end_date"/>
+              <field name="inference_zde"/>
+              <field name="active" invisible="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Notes">
+              <field name="notes" placeholder="Internal notes about this subscription..."/>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_subscription_kanban" model="ir.ui.view">
+    <field name="name">alfa_core.subscription.kanban</field>
+    <field name="model">alfa_core.subscription</field>
+    <field name="arch" type="xml">
+      <kanban default_group_by="state">
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="plan_id"/>
+        <field name="state"/>
+        <templates>
+          <t t-name="card">
+            <div class="o_kanban_card_content">
+              <strong><field name="name"/></strong>
+              <div><field name="partner_id"/></div>
+              <div class="text-muted"><field name="plan_id"/></div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <record id="action_subscription" model="ir.actions.act_window">
+    <field name="name">Subscriptions</field>
+    <field name="res_model">alfa_core.subscription</field>
+    <field name="view_mode">kanban,list,form</field>
+  </record>
+
+</odoo>

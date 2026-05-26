@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="subscription_dangelo_premium" model="alfa_core.subscription">
+      <field name="partner_id" ref="partner_dangelo"/>
+      <field name="plan_id" ref="plan_premium"/>
+      <field name="start_date" eval="(DateTime.now() - relativedelta(years=3, months=6)).strftime('%Y-%m-%d')"/>
+      <field name="state">active</field>
+    </record>
+
+    <record id="subscription_bianchi_pro" model="alfa_core.subscription">
+      <field name="partner_id" ref="partner_bianchi"/>
+      <field name="plan_id" ref="plan_pro"/>
+      <field name="start_date" eval="(DateTime.now() - relativedelta(years=1, months=2)).strftime('%Y-%m-%d')"/>
+      <field name="state">active</field>
+      <field name="inference_zde" eval="False"/>
+    </record>
+
+  </data>
+</odoo>

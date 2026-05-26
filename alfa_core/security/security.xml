@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="module_category_alfa_core" model="ir.module.category">
+      <field name="name">AlfaCore</field>
+      <field name="description">Access rights for the AlfaCore Luxury Automotive Service Platform.</field>
+      <field name="sequence">15</field>
+    </record>
+
+    <!--
+      Odoo 19: res.groups dropped `category_id` in favour of a
+      `res.groups.privilege` intermediary that carries the
+      `category_id`. Each role-style group binds to a single privilege.
+    -->
+    <record id="alfa_core_privilege" model="res.groups.privilege">
+      <field name="name">AlfaCore Roles</field>
+      <field name="category_id" ref="module_category_alfa_core"/>
+    </record>
+
+    <record id="group_user" model="res.groups">
+      <field name="name">AlfaCore / User</field>
+      <field name="privilege_id" ref="alfa_core_privilege"/>
+      <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+      <field name="comment">Internal user with basic AlfaCore visibility.</field>
+    </record>
+
+    <record id="group_advisor" model="res.groups">
+      <field name="name">AlfaCore / Service Advisor</field>
+      <field name="privilege_id" ref="alfa_core_privilege"/>
+      <field name="implied_ids" eval="[(4, ref('alfa_core.group_user'))]"/>
+      <field name="comment">Service advisor — manages customer subscriptions and bookings.</field>
+    </record>
+
+    <record id="group_manager" model="res.groups">
+      <field name="name">AlfaCore / Service Manager</field>
+      <field name="privilege_id" ref="alfa_core_privilege"/>
+      <field name="implied_ids" eval="[(4, ref('alfa_core.group_advisor'))]"/>
+      <field name="comment">Service manager — full configuration access.</field>
+    </record>
+
+    <record id="group_pipeda_officer" model="res.groups">
+      <field name="name">AlfaCore / PIPEDA Privacy Officer</field>
+      <field name="privilege_id" ref="alfa_core_privilege"/>
+      <field name="implied_ids" eval="[(4, ref('alfa_core.group_user'))]"/>
+      <field name="comment">PIPEDA privacy officer — full access to consent records and audit logs.</field>
+    </record>
+
+  </data>
+</odoo>

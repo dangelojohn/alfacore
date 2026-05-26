@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- John D'Angelo's paired Vgate iCar Pro -->
+    <record id="device_dangelo_vgate" model="alfa_core_scanner.device">
+      <field name="serial_number">VG-A047-2024-8821</field>
+      <field name="model_name">vgate_icar_pro</field>
+      <field name="firmware_version">4.2.1</field>
+      <field name="partner_id" ref="alfa_core.partner_dangelo"/>
+      <field name="vehicle_id" ref="alfa_fleet.vehicle_dangelo_stelvio"/>
+      <field name="state">active</field>
+      <field name="last_seen" eval="(DateTime.now() - timedelta(hours=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- M. Bianchi's OBDLink MX+ -->
+    <record id="device_bianchi_obdlink" model="alfa_core_scanner.device">
+      <field name="serial_number">OBL-MX-2023-1455</field>
+      <field name="model_name">obdlink_mx_plus</field>
+      <field name="firmware_version">5.1.0</field>
+      <field name="partner_id" ref="alfa_core.partner_bianchi"/>
+      <field name="vehicle_id" ref="alfa_fleet.vehicle_bianchi_giulia"/>
+      <field name="state">active</field>
+      <field name="last_seen" eval="(DateTime.now() - timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+    </record>
+
+    <!-- John's recent scan with realistic DTCs (P0301 misfire, P0507 idle) -->
+    <record id="scan_session_dangelo_recent" model="alfa_core_scanner.scan_session">
+      <field name="vehicle_id" ref="alfa_fleet.vehicle_dangelo_stelvio"/>
+      <field name="device_id" ref="device_dangelo_vgate"/>
+      <field name="started_at" eval="(DateTime.now() - timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+      <field name="ended_at" eval="(DateTime.now() - timedelta(hours=3) + timedelta(minutes=4)).strftime('%Y-%m-%d %H:%M:%S')"/>
+      <field name="modules_scanned">ECM, TCM, ABS, BCM</field>
+      <field name="battery_voltage">12.6</field>
+      <field name="mileage_at_scan">89247</field>
+      <field name="state">uploaded</field>
+      <field name="inference_zde" eval="True"/>
+    </record>
+
+    <record id="scan_dtc_p0301" model="alfa_core_scanner.scan_dtc">
+      <field name="scan_session_id" ref="scan_session_dangelo_recent"/>
+      <field name="dtc_code">P0301</field>
+      <field name="dtc_status">active</field>
+      <field name="module_source">ECM</field>
+      <field name="freeze_frame_data">RPM: 2100, Coolant: 92°C, Load: 38%, MAP: 78kPa</field>
+    </record>
+
+    <record id="scan_dtc_p0507" model="alfa_core_scanner.scan_dtc">
+      <field name="scan_session_id" ref="scan_session_dangelo_recent"/>
+      <field name="dtc_code">P0507</field>
+      <field name="dtc_status">pending</field>
+      <field name="module_source">ECM</field>
+      <field name="freeze_frame_data">RPM: 950 (target 750), Coolant: 88°C</field>
+    </record>
+
+    <!-- A few representative PIDs from the scan -->
+    <record id="scan_pid_rpm" model="alfa_core_scanner.scan_pid">
+      <field name="scan_session_id" ref="scan_session_dangelo_recent"/>
+      <field name="pid_id">010C</field>
+      <field name="pid_name">Engine RPM</field>
+      <field name="value">847.0</field>
+      <field name="units">rpm</field>
+    </record>
+
+    <record id="scan_pid_coolant" model="alfa_core_scanner.scan_pid">
+      <field name="scan_session_id" ref="scan_session_dangelo_recent"/>
+      <field name="pid_id">0105</field>
+      <field name="pid_name">Engine Coolant Temperature</field>
+      <field name="value">92.0</field>
+      <field name="units">°C</field>
+    </record>
+
+    <record id="scan_pid_maf" model="alfa_core_scanner.scan_pid">
+      <field name="scan_session_id" ref="scan_session_dangelo_recent"/>
+      <field name="pid_id">0110</field>
+      <field name="pid_name">MAF Air Flow Rate</field>
+      <field name="value">14.3</field>
+      <field name="units">g/s</field>
+    </record>
+
+    <!-- Heartbeat samples — last 24h of telemetry -->
+    <record id="heartbeat_dangelo_1" model="alfa_core_scanner.heartbeat">
+      <field name="device_id" ref="device_dangelo_vgate"/>
+      <field name="received_at" eval="(DateTime.now() - timedelta(hours=2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+      <field name="rssi">-58</field>
+      <field name="battery_voltage">12.6</field>
+      <field name="firmware_version">4.2.1</field>
+    </record>
+
+  </data>
+</odoo>

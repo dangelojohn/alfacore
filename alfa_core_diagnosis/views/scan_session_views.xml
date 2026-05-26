@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    Inherits the scan_session form from alfa_core_scanner and adds a
+    "Diagnosis" tab showing the back-reference. The field itself is
+    defined in alfa_core_diagnosis/models/scan_session.py (also via
+    _inherit) to keep the cross-module reference in the direction
+    diagnosis -> scanner only.
+  -->
+  <record id="view_scan_session_form_inherit_diagnosis"
+          model="ir.ui.view">
+    <field name="name">alfa_core_scanner.scan_session.form.inherit.diagnosis</field>
+    <field name="model">alfa_core_scanner.scan_session</field>
+    <field name="inherit_id" ref="alfa_core_scanner.view_session_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//notebook" position="inside">
+        <page string="Diagnosis">
+          <field name="diagnosis_report_id"/>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

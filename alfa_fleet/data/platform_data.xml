@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="platform_giorgio" model="alfa_fleet.platform">
+      <field name="name">Giorgio</field>
+      <field name="code">giorgio</field>
+      <field name="sequence">10</field>
+      <field name="description">RWD/AWD modular platform. Giulia, Stelvio, future Quadrifoglio models.</field>
+    </record>
+
+    <record id="platform_4c" model="alfa_fleet.platform">
+      <field name="name">4C Platform</field>
+      <field name="code">4c</field>
+      <field name="sequence">20</field>
+      <field name="description">Carbon-fibre monocoque mid-engine sports car platform.</field>
+    </record>
+
+    <record id="platform_compact" model="alfa_fleet.platform">
+      <field name="name">Stellantis Compact</field>
+      <field name="code">stellantis_compact</field>
+      <field name="sequence">30</field>
+      <field name="description">Tonale and Junior-tier compact platform.</field>
+    </record>
+
+    <record id="platform_premium_159" model="alfa_fleet.platform">
+      <field name="name">Premium (159 / Brera / Spider)</field>
+      <field name="code">premium_159</field>
+      <field name="sequence">40</field>
+      <field name="description">Pre-2015 GM/Fiat shared platform — heritage support.</field>
+    </record>
+
+  </data>
+</odoo>

@@ -1,0 +1,10 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_loaner_vehicle_user","loaner.vehicle.user","model_alfa_core_loaner_vehicle","alfa_core.group_user",1,0,0,0
+"access_loaner_vehicle_advisor","loaner.vehicle.advisor","model_alfa_core_loaner_vehicle","alfa_core.group_advisor",1,1,0,0
+"access_loaner_vehicle_manager","loaner.vehicle.manager","model_alfa_core_loaner_vehicle","alfa_core.group_manager",1,1,1,1
+"access_allocation_advisor","allocation.advisor","model_alfa_core_loaner_allocation","alfa_core.group_advisor",1,1,1,0
+"access_allocation_manager","allocation.manager","model_alfa_core_loaner_allocation","alfa_core.group_manager",1,1,1,1
+"access_allocation_portal","allocation.portal","model_alfa_core_loaner_allocation","base.group_portal",1,0,0,0
+"access_condition_advisor","condition.advisor","model_alfa_core_loaner_condition_report","alfa_core.group_advisor",1,1,1,0
+"access_condition_manager","condition.manager","model_alfa_core_loaner_condition_report","alfa_core.group_manager",1,1,1,1
+"access_condition_portal","condition.portal","model_alfa_core_loaner_condition_report","base.group_portal",1,0,0,0

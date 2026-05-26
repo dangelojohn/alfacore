@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Landing page (3-column index by audience) + 4 cross-cutting
+         journey surfaces. -->
+    <record id="action_sim_landing" model="ir.actions.act_url">
+      <field name="name">All wireframes (landing)</field>
+      <field name="url">/alfacore/sim</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_journey_customer_record" model="ir.actions.act_url">
+      <field name="name">Journey · Customer Record / Relationship Tape</field>
+      <field name="url">/alfacore/sim/journey/relationship-tape</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_journey_blueprint_authoring" model="ir.actions.act_url">
+      <field name="name">Journey · Blueprint Authoring</field>
+      <field name="url">/alfacore/sim/journey/blueprint-authoring</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_journey_configurator" model="ir.actions.act_url">
+      <field name="name">Journey · Configurator</field>
+      <field name="url">/alfacore/sim/journey/configurator</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_journey_safety_critical_diagnosis" model="ir.actions.act_url">
+      <field name="name">Journey · Safety-Critical Diagnosis</field>
+      <field name="url">/alfacore/sim/journey/safety-critical</field>
+      <field name="target">self</field>
+    </record>
+
+    <menuitem id="menu_sim_root"
+              name="AlfaCore — UI Sim"
+              sequence="79"
+              web_icon="alfa_core_ui_sim,static/description/icon.png"/>
+
+    <menuitem id="menu_sim_landing"
+              name="Landing (all wireframes)"
+              parent="menu_sim_root"
+              action="action_sim_landing"
+              sequence="5"/>
+
+    <menuitem id="menu_journey_customer_record"
+              name="Customer Record / Relationship Tape"
+              parent="menu_sim_root"
+              action="action_journey_customer_record"
+              sequence="10"/>
+
+    <menuitem id="menu_journey_blueprint_authoring"
+              name="Blueprint Authoring"
+              parent="menu_sim_root"
+              action="action_journey_blueprint_authoring"
+              sequence="20"/>
+
+    <menuitem id="menu_journey_configurator"
+              name="Configurator"
+              parent="menu_sim_root"
+              action="action_journey_configurator"
+              sequence="30"/>
+
+    <menuitem id="menu_journey_safety_critical_diagnosis"
+              name="Safety-Critical Diagnosis"
+              parent="menu_sim_root"
+              action="action_journey_safety_critical_diagnosis"
+              sequence="40"/>
+
+  </data>
+</odoo>

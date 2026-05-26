@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="vehicle_dangelo_stelvio" model="alfa_fleet.vehicle">
+      <field name="vin">ZASFAKBN3J7C12345</field>
+      <field name="year">2018</field>
+      <field name="make">Alfa Romeo</field>
+      <field name="model">Stelvio</field>
+      <field name="platform_id" ref="platform_giorgio"/>
+      <field name="engine_id" ref="engine_gme_2_0t"/>
+      <field name="trim_id" ref="trim_ti"/>
+      <field name="color">Vesuvio Grey Metallic</field>
+      <field name="color_interior">Black Pelle</field>
+      <field name="last_mileage_km">89247</field>
+      <field name="license_plate">CTYO 489</field>
+      <field name="state">active</field>
+    </record>
+
+    <record id="ownership_dangelo_stelvio" model="alfa_fleet.vehicle.ownership">
+      <field name="vehicle_id" ref="vehicle_dangelo_stelvio"/>
+      <field name="partner_id" ref="alfa_core.partner_dangelo"/>
+      <field name="role">primary_driver</field>
+      <field name="start_date" eval="(DateTime.now() - relativedelta(years=3, months=6)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <record id="pref_dangelo_oil" model="alfa_fleet.vehicle.preference">
+      <field name="vehicle_id" ref="vehicle_dangelo_stelvio"/>
+      <field name="category">oil</field>
+      <field name="name">5W-40 Selenia K Pure Energy</field>
+      <field name="spec">ACEA C3 · MOPAR MS-12991 approved</field>
+      <field name="brand_preference">Selenia</field>
+    </record>
+
+    <record id="pref_dangelo_tires" model="alfa_fleet.vehicle.preference">
+      <field name="vehicle_id" ref="vehicle_dangelo_stelvio"/>
+      <field name="category">tire</field>
+      <field name="name">Pirelli P Zero All Season</field>
+      <field name="brand_preference">Pirelli</field>
+    </record>
+
+    <record id="vehicle_bianchi_giulia" model="alfa_fleet.vehicle">
+      <field name="vin">ZARFAEBN8L7567890</field>
+      <field name="year">2020</field>
+      <field name="make">Alfa Romeo</field>
+      <field name="model">Giulia</field>
+      <field name="platform_id" ref="platform_giorgio"/>
+      <field name="engine_id" ref="engine_29_v6_qv"/>
+      <field name="trim_id" ref="trim_quadrifoglio"/>
+      <field name="color">Rosso Competizione</field>
+      <field name="last_mileage_km">42180</field>
+      <field name="state">active</field>
+    </record>
+
+    <record id="ownership_bianchi_giulia" model="alfa_fleet.vehicle.ownership">
+      <field name="vehicle_id" ref="vehicle_bianchi_giulia"/>
+      <field name="partner_id" ref="alfa_core.partner_bianchi"/>
+      <field name="role">primary_driver</field>
+      <field name="start_date" eval="(DateTime.now() - relativedelta(years=1, months=2)).strftime('%Y-%m-%d')"/>
+    </record>
+
+  </data>
+</odoo>

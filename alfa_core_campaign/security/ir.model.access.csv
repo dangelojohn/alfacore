@@ -1,0 +1,9 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_camp_user","camp.user","model_alfa_core_campaign_campaign","alfa_core.group_user",1,0,0,0
+"access_camp_advisor","camp.advisor","model_alfa_core_campaign_campaign","alfa_core.group_advisor",1,1,1,0
+"access_camp_manager","camp.manager","model_alfa_core_campaign_campaign","alfa_core.group_manager",1,1,1,1
+"access_target_advisor","target.advisor","model_alfa_core_campaign_target","alfa_core.group_advisor",1,1,1,0
+"access_target_manager","target.manager","model_alfa_core_campaign_target","alfa_core.group_manager",1,1,1,1
+"access_target_portal","target.portal","model_alfa_core_campaign_target","base.group_portal",1,0,0,0
+"access_notif_advisor","notif.advisor","model_alfa_core_campaign_notification","alfa_core.group_advisor",1,1,1,0
+"access_notif_manager","notif.manager","model_alfa_core_campaign_notification","alfa_core.group_manager",1,1,1,1

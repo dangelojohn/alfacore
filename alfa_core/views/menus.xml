@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <menuitem id="menu_alfa_core_root"
+            name="AlfaCore"
+            web_icon="alfa_core,static/description/icon.png"
+            sequence="15"/>
+
+  <menuitem id="menu_alfa_core_operations"
+            name="Operations"
+            parent="menu_alfa_core_root"
+            sequence="10"/>
+
+  <menuitem id="menu_subscription"
+            name="Subscriptions"
+            parent="menu_alfa_core_operations"
+            action="action_subscription"
+            sequence="20"/>
+
+  <menuitem id="menu_alfa_core_configuration"
+            name="Configuration"
+            parent="menu_alfa_core_root"
+            sequence="90"
+            groups="alfa_core.group_manager"/>
+
+  <menuitem id="menu_subscription_plan"
+            name="Subscription Plans"
+            parent="menu_alfa_core_configuration"
+            action="action_subscription_plan"
+            sequence="10"/>
+
+</odoo>

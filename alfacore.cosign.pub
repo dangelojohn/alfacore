@@ -1,0 +1,4 @@
+-----BEGIN PUBLIC KEY-----
+PLACEHOLDER_REPLACE_BY_RUNNING_tools_setup_cosign_sh
+RealPlaintextPublicKeyHere_BASE64_ENCODED_ECDSA_P256
+-----END PUBLIC KEY-----

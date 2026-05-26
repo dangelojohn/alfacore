@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_part_list" model="ir.ui.view">
+    <field name="name">alfa_parts.part.list</field>
+    <field name="model">alfa_parts.part</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="part_number"/>
+        <field name="canon_part_number" optional="hide"/>
+        <field name="name"/>
+        <field name="manufacturer"/>
+        <field name="category"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_part_form" model="ir.ui.view">
+    <field name="name">alfa_parts.part.form</field>
+    <field name="model">alfa_parts.part</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <div class="oe_title">
+            <label for="display_name"/>
+            <h1><field name="display_name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="part_number"/>
+              <field name="canon_part_number" readonly="1"/>
+              <field name="manufacturer"/>
+              <field name="category"/>
+            </group>
+            <group>
+              <field name="product_id"/>
+              <field name="active"/>
+            </group>
+          </group>
+          <field name="name"/>
+          <notebook>
+            <page string="Fitment">
+              <group>
+                <field name="fits_platform_ids" widget="many2many_tags"/>
+                <field name="fits_engine_ids" widget="many2many_tags"/>
+              </group>
+            </page>
+            <page string="Alternatives">
+              <field name="alternative_ids">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="manufacturer"/>
+                  <field name="name"/>
+                  <field name="part_number"/>
+                  <field name="grade" widget="badge"
+                         decoration-success="grade == 'safe'"
+                         decoration-warning="grade == 'interim'"
+                         decoration-danger="grade == 'not_recommended'"/>
+                  <field name="price_savings_pct"/>
+                </list>
+                <form>
+                  <sheet>
+                    <group>
+                      <group>
+                        <field name="manufacturer"/>
+                        <field name="name"/>
+                        <field name="part_number"/>
+                      </group>
+                      <group>
+                        <field name="grade"/>
+                        <field name="price_savings_pct"/>
+                        <field name="source_reference"/>
+                      </group>
+                    </group>
+                    <field name="rationale" placeholder="Why this grade..."/>
+                  </sheet>
+                </form>
+              </field>
+            </page>
+            <page string="Vendors">
+              <field name="vendor_ids" widget="many2many_tags"/>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_part" model="ir.actions.act_window">
+    <field name="name">Parts</field>
+    <field name="res_model">alfa_parts.part</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_kit_list" model="ir.ui.view">
+    <field name="name">alfa_parts.part.kit.list</field>
+    <field name="model">alfa_parts.part.kit</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="estimated_labor_hours"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_kit_form" model="ir.ui.view">
+    <field name="name">alfa_parts.part.kit.form</field>
+    <field name="model">alfa_parts.part.kit</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="code"/>
+              <field name="estimated_labor_hours"/>
+              <field name="active"/>
+            </group>
+            <group>
+              <field name="fits_platform_ids" widget="many2many_tags"/>
+              <field name="fits_engine_ids" widget="many2many_tags"/>
+            </group>
+          </group>
+          <field name="description"/>
+          <field name="line_ids">
+            <list editable="bottom">
+              <field name="sequence" widget="handle"/>
+              <field name="part_id"/>
+              <field name="quantity"/>
+              <field name="required" widget="boolean_toggle"/>
+              <field name="notes"/>
+            </list>
+          </field>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_kit" model="ir.actions.act_window">
+    <field name="name">Service Quote Kits</field>
+    <field name="res_model">alfa_parts.part.kit</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_vendor_list" model="ir.ui.view">
+    <field name="name">alfa_parts.part.vendor.list</field>
+    <field name="model">alfa_parts.part.vendor</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="vendor_type"/>
+        <field name="contact_phone"/>
+        <field name="delivery_days_typical"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_vendor_form" model="ir.ui.view">
+    <field name="name">alfa_parts.part.vendor.form</field>
+    <field name="model">alfa_parts.part.vendor</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="vendor_type"/>
+              <field name="partner_id"/>
+            </group>
+            <group>
+              <field name="contact_phone"/>
+              <field name="contact_email"/>
+              <field name="website" widget="url"/>
+              <field name="delivery_days_typical"/>
+            </group>
+          </group>
+          <field name="notes"/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_vendor" model="ir.actions.act_window">
+    <field name="name">Parts Vendors</field>
+    <field name="res_model">alfa_parts.part.vendor</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_parts" name="Parts"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_part" sequence="20"/>
+  <menuitem id="menu_kits" name="Kits"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_kit" sequence="22"/>
+  <menuitem id="menu_vendors" name="Parts Vendors"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_vendor" sequence="50"/>
+
+</odoo>

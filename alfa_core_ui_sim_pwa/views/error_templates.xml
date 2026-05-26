@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="sim_layout" name="AlfaCore PWA Sim · Bare Layout">
+    &lt;!DOCTYPE html&gt;
+    <html lang="en">
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title><t t-out="head_meta_title or 'AlfaCore PWA Sim'"/></title>
+      </head>
+      <body>
+        <t t-out="0"/>
+      </body>
+    </html>
+  </template>
+  <template id="surface_not_found" name="PWA Sim — Surface Not Found">
+    <t t-call="alfa_core_ui_sim_pwa.sim_layout">
+      <t t-set="head">
+        <link rel="stylesheet" href="/alfa_core_ui_sim_pwa/static/src/css/design_system.css"/>
+      </t>
+      <div class="ac-sim" style="text-align: center; padding: 80px 24px;">
+        <div class="ac-eyebrow">Wireframe surface not found</div>
+        <h1>404 — Unknown PWA surface</h1>
+        <p>The surface <code t-out="surface"/> is not part of the v1.0 PWA wireframe set.</p>
+        <p>Known surfaces:</p>
+        <ul style="list-style: none; padding: 0; font-family: 'Space Mono', monospace;">
+          <t t-foreach="known" t-as="s">
+            <li><a t-attf-href="/alfacore/sim/pwa/{{s}}" t-out="s"/></li>
+          </t>
+        </ul>
+        <p><a class="ac-btn ac-btn--primary" href="/alfacore/sim">Back to sim index</a></p>
+      </div>
+    </t>
+  </template>
+
+  <template id="jwt_issuance_failed" name="PWA Sim — JWT Issuance Failed">
+    <t t-call="alfa_core_ui_sim_pwa.sim_layout">
+      <t t-set="head">
+        <link rel="stylesheet" href="/alfa_core_ui_sim_pwa/static/src/css/design_system.css"/>
+      </t>
+      <div class="ac-sim" style="text-align: center; padding: 80px 24px;">
+        <div class="ac-eyebrow">Demo token issuance failed</div>
+        <h1>Could not mint the demo JWT.</h1>
+        <p style="color: #B91C1C; font-family: 'Space Mono', monospace;" t-out="error"/>
+        <p>Switch to mockup mode (no live data) instead:</p>
+        <p>
+          <a class="ac-btn ac-btn--primary"
+             t-attf-href="/alfacore/sim/pwa/digital-garage?mockup=1">
+            Open with mockup data
+          </a>
+        </p>
+      </div>
+    </t>
+  </template>
+</odoo>

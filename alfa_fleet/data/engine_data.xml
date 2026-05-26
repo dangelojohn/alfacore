@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="engine_gme_2_0t" model="alfa_fleet.engine">
+      <field name="name">GME 2.0L Turbo</field>
+      <field name="code">GME_2_0T</field>
+      <field name="platform_id" ref="platform_giorgio"/>
+      <field name="displacement">2.0 L</field>
+      <field name="configuration">Inline-4 Turbo</field>
+      <field name="horsepower_kw">206</field>
+      <field name="torque_nm">400</field>
+      <field name="fuel_type">gasoline</field>
+      <field name="oil_capacity_l">5.7</field>
+      <field name="default_oil_spec">5W-40 ACEA C3 · MOPAR MS-12991</field>
+    </record>
+
+    <record id="engine_29_v6_qv" model="alfa_fleet.engine">
+      <field name="name">2.9 V6 Quadrifoglio</field>
+      <field name="code">F154_29_V6</field>
+      <field name="platform_id" ref="platform_giorgio"/>
+      <field name="displacement">2.9 L</field>
+      <field name="configuration">V6 BiTurbo</field>
+      <field name="horsepower_kw">375</field>
+      <field name="torque_nm">600</field>
+      <field name="fuel_type">gasoline</field>
+      <field name="oil_capacity_l">6.5</field>
+      <field name="default_oil_spec">5W-40 Selenia Racing · ACEA A3/B4</field>
+    </record>
+
+    <record id="engine_1750_tbi" model="alfa_fleet.engine">
+      <field name="name">1750 TBi (4C)</field>
+      <field name="code">1750_TBi</field>
+      <field name="platform_id" ref="platform_4c"/>
+      <field name="displacement">1.75 L</field>
+      <field name="configuration">Inline-4 Turbo</field>
+      <field name="horsepower_kw">177</field>
+      <field name="torque_nm">350</field>
+      <field name="fuel_type">gasoline</field>
+      <field name="oil_capacity_l">4.5</field>
+      <field name="default_oil_spec">5W-40 Selenia K Pure Energy</field>
+    </record>
+
+    <record id="engine_tonale_15_hybrid" model="alfa_fleet.engine">
+      <field name="name">1.5 T4 MHEV (Tonale)</field>
+      <field name="code">15_T4_MHEV</field>
+      <field name="platform_id" ref="platform_compact"/>
+      <field name="displacement">1.5 L</field>
+      <field name="configuration">Inline-4 Mild Hybrid</field>
+      <field name="horsepower_kw">118</field>
+      <field name="torque_nm">240</field>
+      <field name="fuel_type">hybrid</field>
+      <field name="oil_capacity_l">4.0</field>
+      <field name="default_oil_spec">0W-20 Selenia K Hybrid</field>
+    </record>
+
+  </data>
+</odoo>

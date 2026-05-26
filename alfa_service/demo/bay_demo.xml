@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="bay_1" model="alfa_service.bay">
+      <field name="name">Bay 1 · General</field>
+      <field name="code">BAY01</field>
+      <field name="bay_type">general</field>
+      <field name="lift_type">two_post</field>
+      <field name="sequence">10</field>
+    </record>
+
+    <record id="bay_2" model="alfa_service.bay">
+      <field name="name">Bay 2 · General</field>
+      <field name="code">BAY02</field>
+      <field name="bay_type">general</field>
+      <field name="lift_type">two_post</field>
+      <field name="sequence">20</field>
+    </record>
+
+    <record id="bay_align" model="alfa_service.bay">
+      <field name="name">Alignment</field>
+      <field name="code">BAY03</field>
+      <field name="bay_type">alignment</field>
+      <field name="lift_type">four_post</field>
+      <field name="sequence">30</field>
+    </record>
+
+    <record id="bay_diag" model="alfa_service.bay">
+      <field name="name">Diagnostic</field>
+      <field name="code">BAY04</field>
+      <field name="bay_type">diagnostic</field>
+      <field name="lift_type">scissor</field>
+      <field name="sequence">40</field>
+    </record>
+
+  </data>
+</odoo>

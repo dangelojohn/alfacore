@@ -1,0 +1,274 @@
+// AlfaCore Industrial Futurism design system
+// Token source: docs/architecture/Alfa-Odoo-Server-Plan §7.3 (palette confirmed
+// by Claude Code) + chat-side widget defaults for tokens not in §7.3.
+
+// ---------------------------------------------------------------------------
+// Palette
+// ---------------------------------------------------------------------------
+$ac-primary:       #0A3D6B;  // Industrial Blue — chrome, navigation, primary CTAs
+$ac-spark:         #F58220;  // Spark Orange — emphasis, attention, "hot" states
+$ac-cyan:          #00B4D8;  // Electric Cyan — links, secondary actions, info
+$ac-dark-metal:    #1A1A1A;  // Dark Metal — body text on light, panel chrome
+
+// Neutrals (chat-side defaults; awaiting §7.3 confirmation for exact greys)
+$ac-bg:            #F5F7FA;  // Page background
+$ac-surface:       #FFFFFF;  // Card surface
+$ac-surface-2:     #FAFBFC;  // Recessed surface
+$ac-border:        #E2E8F0;  // Subtle divider
+$ac-border-strong: #94A3B8;  // Emphasized divider
+$ac-text:          #1A1A1A;  // Body text
+$ac-text-2:        #475569;  // Secondary text
+$ac-text-3:        #94A3B8;  // Tertiary / hint
+
+// Semantic
+$ac-success:       #15803D;
+$ac-warn:          #B45309;
+$ac-danger:        #B91C1C;
+$ac-safety-crit:   #991B1B;  // Distinct from danger — for do-not-drive recalls
+
+// ---------------------------------------------------------------------------
+// Typography
+// ---------------------------------------------------------------------------
+$ac-font-mono:    "Space Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+$ac-font-sans:    "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+$ac-fs-xs:    11px;
+$ac-fs-sm:    13px;
+$ac-fs-base:  15px;
+$ac-fs-md:    17px;
+$ac-fs-lg:    21px;
+$ac-fs-xl:    28px;
+$ac-fs-2xl:   36px;
+
+$ac-lh-tight:    1.2;
+$ac-lh-normal:   1.45;
+$ac-lh-relaxed:  1.6;
+
+// ---------------------------------------------------------------------------
+// Spacing — 8pt grid
+// ---------------------------------------------------------------------------
+$ac-sp-1:  4px;
+$ac-sp-2:  8px;
+$ac-sp-3:  12px;
+$ac-sp-4:  16px;
+$ac-sp-5:  24px;
+$ac-sp-6:  32px;
+$ac-sp-7:  48px;
+$ac-sp-8:  64px;
+
+// ---------------------------------------------------------------------------
+// Radii + shadows
+// ---------------------------------------------------------------------------
+$ac-radius-sm:  4px;
+$ac-radius-md:  8px;
+$ac-radius-lg:  12px;
+$ac-radius-xl:  20px;
+
+$ac-shadow-sm:  0 1px 2px rgba(10, 61, 107, 0.06);
+$ac-shadow-md:  0 4px 12px rgba(10, 61, 107, 0.10);
+$ac-shadow-lg:  0 12px 32px rgba(10, 61, 107, 0.16);
+
+// ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// CSS custom properties — exposes the SASS tokens above as runtime vars so
+// inline template styles like style="color: var(--ac-text-2)" actually resolve.
+// Without this block, those var() references are undefined and the property
+// declarations become invalid — divs render with wrong/missing styling.
+// ---------------------------------------------------------------------------
+:root {
+  --ac-primary:       #{$ac-primary};
+  --ac-spark:         #{$ac-spark};
+  --ac-cyan:          #{$ac-cyan};
+  --ac-dark-metal:    #{$ac-dark-metal};
+  --ac-bg:            #{$ac-bg};
+  --ac-surface:       #{$ac-surface};
+  --ac-surface-2:     #{$ac-surface-2};
+  --ac-border:        #{$ac-border};
+  --ac-border-strong: #{$ac-border-strong};
+  --ac-text:          #{$ac-text};
+  --ac-text-2:        #{$ac-text-2};
+  --ac-text-3:        #{$ac-text-3};
+  --ac-success:       #{$ac-success};
+  --ac-warn:          #{$ac-warn};
+  --ac-danger:        #{$ac-danger};
+  --ac-safety-crit:   #{$ac-safety-crit};
+  --ac-font-mono:     #{inspect($ac-font-mono)};
+  --ac-font-sans:     #{inspect($ac-font-sans)};
+}
+
+// SIM wrapper — every sim surface gets this scoping
+// ---------------------------------------------------------------------------
+.ac-sim {
+    font-family: $ac-font-sans;
+    font-size: $ac-fs-base;
+    line-height: $ac-lh-normal;
+    color: $ac-text;
+    background: $ac-bg;
+    min-height: 100vh;
+    padding: $ac-sp-5;
+
+    h1, h2, h3, h4 {
+        font-family: $ac-font-sans;
+        font-weight: 700;
+        line-height: $ac-lh-tight;
+        color: $ac-primary;
+        margin: 0 0 $ac-sp-3 0;
+    }
+    h1 { font-size: $ac-fs-2xl; letter-spacing: -0.5px; }
+    h2 { font-size: $ac-fs-xl; }
+    h3 { font-size: $ac-fs-lg; }
+    h4 { font-size: $ac-fs-md; }
+
+}
+
+// ---------------------------------------------------------------------------
+// Common surface chrome
+// ---------------------------------------------------------------------------
+.ac-card {
+    background: $ac-surface;
+    border: 1px solid $ac-border;
+    border-radius: $ac-radius-md;
+    padding: $ac-sp-5;
+    box-shadow: $ac-shadow-sm;
+}
+
+.ac-card--inset {
+    background: $ac-surface-2;
+    border-color: $ac-border;
+}
+
+.ac-eyebrow {
+    font-family: $ac-font-mono;
+    font-size: $ac-fs-xs;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: $ac-text-3;
+    margin-bottom: $ac-sp-2;
+}
+
+.ac-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $ac-sp-1;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-family: $ac-font-mono;
+    font-size: $ac-fs-xs;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: $ac-border;
+    color: $ac-text-2;
+
+    &--primary  { background: rgba(10,61,107,0.10); color: $ac-primary; }
+    &--spark    { background: rgba(245,130,32,0.15); color: darken($ac-spark, 8%); }
+    &--cyan     { background: rgba(0,180,216,0.15); color: darken($ac-cyan, 18%); }
+    &--success  { background: rgba(21,128,61,0.12); color: $ac-success; }
+    &--warn     { background: rgba(180,83,9,0.12);  color: $ac-warn; }
+    &--danger   { background: rgba(185,28,28,0.12); color: $ac-danger; }
+    &--safety   { background: $ac-safety-crit; color: white; }
+    &--future   {
+        background: transparent;
+        color: $ac-text-3;
+        border: 1px dashed $ac-text-3;
+    }
+}
+
+.ac-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $ac-sp-2;
+    padding: $ac-sp-3 $ac-sp-4;
+    border: 1px solid transparent;
+    border-radius: $ac-radius-sm;
+    font-family: $ac-font-sans;
+    font-size: $ac-fs-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: $ac-surface;
+    color: $ac-primary;
+    border-color: $ac-border-strong;
+
+    &:hover { background: $ac-surface-2; border-color: $ac-primary; }
+
+    &--primary {
+        background: $ac-primary;
+        color: white;
+        border-color: $ac-primary;
+        &:hover { background: darken($ac-primary, 8%); }
+    }
+    &--spark {
+        background: $ac-spark;
+        color: white;
+        border-color: $ac-spark;
+        &:hover { background: darken($ac-spark, 8%); }
+    }
+    &--ghost {
+        background: transparent;
+        border-color: transparent;
+        color: $ac-text-2;
+        &:hover { background: $ac-surface-2; color: $ac-primary; }
+    }
+}
+
+.ac-data-grid {
+    display: grid;
+    gap: $ac-sp-4;
+    .ac-data-grid__cell {
+        .ac-data-grid__label {
+            font-family: $ac-font-mono;
+            font-size: $ac-fs-xs;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: $ac-text-3;
+            margin-bottom: 2px;
+        }
+        .ac-data-grid__value {
+            font-size: $ac-fs-base;
+            font-weight: 500;
+            color: $ac-text;
+        }
+        .ac-data-grid__value--mono {
+            font-family: $ac-font-mono;
+            font-size: $ac-fs-sm;
+        }
+    }
+}
+
+.ac-dtc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $ac-sp-2;
+    padding: $ac-sp-2 $ac-sp-3;
+    background: rgba(245, 130, 32, 0.10);
+    border: 1px solid rgba(245, 130, 32, 0.40);
+    border-radius: $ac-radius-sm;
+    font-family: $ac-font-mono;
+    font-size: $ac-fs-sm;
+    color: darken($ac-spark, 14%);
+
+    &--safety {
+        background: rgba(185,28,28,0.10);
+        border-color: rgba(185,28,28,0.40);
+        color: $ac-safety-crit;
+    }
+}
+
+// Phase-2 placeholder — for honest-boundary surface markers
+.ac-phase2-placeholder {
+    border: 1px dashed $ac-border-strong;
+    border-radius: $ac-radius-md;
+    padding: $ac-sp-5;
+    text-align: center;
+    color: $ac-text-3;
+    font-family: $ac-font-mono;
+    font-size: $ac-fs-sm;
+    background: transparent;
+
+    &__label {
+        font-size: $ac-fs-xs;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: $ac-sp-2;
+    }
+}

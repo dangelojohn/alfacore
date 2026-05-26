@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_dtc_list" model="ir.ui.view">
+    <field name="name">alfa_core_diagnosis.dtc.list</field>
+    <field name="model">alfa_core_diagnosis.dtc</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="code"/>
+        <field name="name"/>
+        <field name="category"/>
+        <field name="severity" widget="badge"
+               decoration-info="severity == 'info'"
+               decoration-warning="severity == 'warn'"
+               decoration-danger="severity in ('severe','safety_critical')"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_dtc_form" model="ir.ui.view">
+    <field name="name">alfa_core_diagnosis.dtc.form</field>
+    <field name="model">alfa_core_diagnosis.dtc</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="code"/>
+              <field name="name"/>
+              <field name="category"/>
+              <field name="severity"/>
+            </group>
+            <group>
+              <field name="fits_platform_ids" widget="many2many_tags"/>
+              <field name="active"/>
+            </group>
+          </group>
+          <field name="description_long" placeholder="Customer-facing description..."/>
+          <field name="typical_causes" placeholder="Typical causes..."/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_dtc" model="ir.actions.act_window">
+    <field name="name">DTC Library</field>
+    <field name="res_model">alfa_core_diagnosis.dtc</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_report_list" model="ir.ui.view">
+    <field name="name">alfa_core_diagnosis.report.list</field>
+    <field name="model">alfa_core_diagnosis.report</field>
+    <field name="arch" type="xml">
+      <list decoration-warning="severity == 'warn'"
+            decoration-danger="severity in ('severe','safety_critical')">
+        <field name="name"/>
+        <field name="vehicle_id"/>
+        <field name="partner_id"/>
+        <field name="confidence" widget="progressbar"/>
+        <field name="severity" widget="badge"/>
+        <field name="state" widget="badge"/>
+        <field name="create_date"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_report_form" model="ir.ui.view">
+    <field name="name">alfa_core_diagnosis.report.form</field>
+    <field name="model">alfa_core_diagnosis.report</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="scan_session_id"/>
+              <field name="vehicle_id" readonly="1"/>
+              <field name="partner_id" readonly="1"/>
+            </group>
+            <group>
+              <field name="confidence" widget="progressbar"/>
+              <field name="severity"/>
+              <field name="inference_zde"/>
+              <field name="reviewed_by_id"/>
+              <field name="reviewed_at" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Customer Summary">
+              <field name="summary" placeholder="Plain-English summary..."/>
+            </page>
+            <page string="Technical Summary">
+              <field name="technical_summary"/>
+            </page>
+            <page string="Recommendations">
+              <field name="recommendation_ids">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="name"/>
+                  <field name="action_type"/>
+                  <field name="related_part_id"/>
+                  <field name="related_kit_id"/>
+                  <field name="confidence"/>
+                </list>
+              </field>
+            </page>
+            <page string="Pro Review">
+              <field name="review_notes" placeholder="Reviewer notes..."/>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_report" model="ir.actions.act_window">
+    <field name="name">Diagnosis Reports</field>
+    <field name="res_model">alfa_core_diagnosis.report</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_diagnosis_reports" name="Diagnoses"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_report" sequence="40"/>
+  <menuitem id="menu_dtc_library" name="DTC Library"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_dtc" sequence="70"/>
+
+</odoo>

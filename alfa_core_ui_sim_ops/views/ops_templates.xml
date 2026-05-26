@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="sim_layout" name="AlfaCore Ops Sim · Bare Layout">
+    &lt;!DOCTYPE html&gt;
+    <html lang="en">
+      <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title><t t-out="head_meta_title or 'AlfaCore Ops Sim'"/></title>
+        <t t-call-assets="web.assets_frontend"/>
+      </head>
+      <body>
+        <t t-out="0"/>
+      </body>
+    </html>
+  </template>
+  <!-- =====================================================================
+       Shared layout — used by all four ops surfaces.
+       Pulls from web.frontend_layout for a clean shell + asset bundle.
+  ===================================================================== -->
+  <template id="ops_layout" name="AlfaCore Ops Sim · Layout">
+    <t t-call="alfa_core_ui_sim_ops.sim_layout">
+      <t t-set="head_meta_title">AlfaCore Sim · <t t-out="surface_slug or 'Operations'"/></t>
+      <div class="ac-sim">
+        <div style="max-width: 1200px; margin: 0 auto;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div>
+              <div class="ac-eyebrow">AlfaCore · Operations wireframe</div>
+              <h1 style="margin-top: 4px;"><t t-out="surface_title or 'Surface'"/></h1>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <a class="ac-btn ac-btn--ghost" href="/alfacore/sim">← Index</a>
+              <t t-if="mockup">
+                <a class="ac-btn ac-btn--ghost"
+                   t-attf-href="/alfacore/sim/ops/{{surface_slug}}">Live data</a>
+              </t>
+              <t t-if="not mockup">
+                <a class="ac-btn ac-btn--ghost"
+                   t-attf-href="/alfacore/sim/ops/{{surface_slug}}?mockup=1">Mockup data</a>
+              </t>
+            </div>
+          </div>
+          <t t-out="0"/>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Surface 1 — Technician Tablet
+  ===================================================================== -->
+  <template id="technician_tablet" name="Ops · Technician Tablet">
+    <t t-call="alfa_core_ui_sim_ops.ops_layout">
+      <t t-set="surface_title">Technician tablet</t>
+      <t t-set="surface_slug">technician-tablet</t>
+
+      <t t-set="job" t-value="ctx.get('current_job', {})"/>
+      <div class="ac-card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+          <div>
+            <div class="ac-eyebrow">Active work order</div>
+            <h2 style="margin: 4px 0;"><t t-out="job.get('name')"/></h2>
+            <div style="color: var(--ac-text-2);">
+              <strong t-out="job.get('customer_name')"/> · <span t-out="job.get('vehicle_label')"/>
+            </div>
+          </div>
+          <span t-attf-class="ac-badge ac-badge--spark"
+                t-out="job.get('service_state')"/>
+        </div>
+        <div class="ac-data-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 20px;">
+          <div>
+            <div class="ac-data-grid__label">Mileage</div>
+            <div class="ac-data-grid__value ac-data-grid__value--mono">
+              <t t-out="job.get('mileage_km')"/> km
+            </div>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Bay</div>
+            <div class="ac-data-grid__value" t-out="job.get('bay')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Active DTCs</div>
+            <div>
+              <t t-foreach="job.get('dtcs_active', [])" t-as="dtc">
+                <span class="ac-dtc-chip" style="margin-right: 4px;" t-out="dtc"/>
+              </t>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+        <div class="ac-card">
+          <div class="ac-eyebrow">Operations</div>
+          <h3 style="margin-top: 4px;">Job plan</h3>
+          <t t-foreach="job.get('operations', [])" t-as="op">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--ac-border);">
+              <div>
+                <strong t-out="op.get('name')"/>
+                <div style="color: var(--ac-text-3); font-size: 12px; font-family: var(--ac-font-mono);">
+                  <t t-out="op.get('duration_min')"/> min
+                </div>
+              </div>
+              <span t-attf-class="ac-badge ac-badge--{{'success' if op.get('state')=='complete' else 'spark' if op.get('state')=='in_progress' else 'primary'}}"
+                    t-out="op.get('state')"/>
+            </div>
+          </t>
+        </div>
+        <div class="ac-card">
+          <div class="ac-eyebrow">Parts picked</div>
+          <h3 style="margin-top: 4px;">From stock</h3>
+          <t t-foreach="job.get('parts_picked', [])" t-as="p">
+            <div style="padding: 8px 0; border-bottom: 1px solid var(--ac-border);">
+              <div style="font-family: var(--ac-font-mono); font-size: 13px;" t-out="p.get('part_number')"/>
+              <div style="font-weight: 600;" t-out="p.get('name')"/>
+              <div style="color: var(--ac-text-3); font-size: 12px;">
+                qty <t t-out="p.get('qty')"/> · <t t-out="p.get('vendor')"/>
+              </div>
+            </div>
+          </t>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; display: flex; gap: 8px; justify-content: flex-end;">
+        <a class="ac-btn" href="#">Hold for parts</a>
+        <a class="ac-btn ac-btn--primary" href="#">Mark current op complete</a>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Surface 2 — Advisor Cockpit
+  ===================================================================== -->
+  <template id="advisor_cockpit" name="Ops · Advisor Cockpit">
+    <t t-call="alfa_core_ui_sim_ops.ops_layout">
+      <t t-set="surface_title">Advisor cockpit</t>
+      <t t-set="surface_slug">advisor-cockpit</t>
+
+      <t t-set="kpis" t-value="ctx.get('kpis', {})"/>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+        <div class="ac-card" style="text-align: center;">
+          <div class="ac-eyebrow">Open orders</div>
+          <div style="font-size: 36px; font-weight: 700; color: var(--ac-primary);" t-out="kpis.get('open_orders', 0)"/>
+        </div>
+        <div class="ac-card" style="text-align: center;">
+          <div class="ac-eyebrow">Awaiting parts</div>
+          <div style="font-size: 36px; font-weight: 700; color: var(--ac-spark);" t-out="kpis.get('awaiting_parts', 0)"/>
+        </div>
+        <div class="ac-card" style="text-align: center;">
+          <div class="ac-eyebrow">Ready for pickup</div>
+          <div style="font-size: 36px; font-weight: 700; color: var(--ac-success);" t-out="kpis.get('ready_for_pickup', 0)"/>
+        </div>
+        <div class="ac-card" style="text-align: center;">
+          <div class="ac-eyebrow">Today (CAD)</div>
+          <div style="font-size: 36px; font-weight: 700; color: var(--ac-primary);">
+            $<t t-out="'{:,}'.format(kpis.get('today_revenue_cad', 0))"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="ac-card" style="margin-bottom: 16px;">
+        <div class="ac-eyebrow">Live queue</div>
+        <h3 style="margin-top: 4px;">Service orders in flight</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+          <thead>
+            <tr style="text-align: left; border-bottom: 2px solid var(--ac-border-strong);">
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">Order</th>
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">Customer</th>
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">Vehicle</th>
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">Tech</th>
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">State</th>
+              <th style="padding: 8px; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3);">ETA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <t t-foreach="ctx.get('queue', [])" t-as="row">
+              <tr style="border-bottom: 1px solid var(--ac-border);">
+                <td style="padding: 12px 8px; font-family: var(--ac-font-mono); font-weight: 600;" t-out="row.get('name')"/>
+                <td style="padding: 12px 8px;" t-out="row.get('customer')"/>
+                <td style="padding: 12px 8px; color: var(--ac-text-2);" t-out="row.get('vehicle')"/>
+                <td style="padding: 12px 8px; color: var(--ac-text-2);" t-out="row.get('tech')"/>
+                <td style="padding: 12px 8px;">
+                  <span class="ac-badge ac-badge--primary" t-out="row.get('state')"/>
+                </td>
+                <td style="padding: 12px 8px; color: var(--ac-text-2);" t-out="row.get('eta')"/>
+              </tr>
+            </t>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ac-card" t-if="ctx.get('alerts')">
+        <div class="ac-eyebrow">Alerts</div>
+        <h3 style="margin-top: 4px;">Operational signals</h3>
+        <t t-foreach="ctx.get('alerts', [])" t-as="alert">
+          <div style="display: flex; align-items: start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--ac-border);">
+            <span t-attf-class="ac-badge ac-badge--{{alert.get('severity', 'primary')}}"
+                  t-out="alert.get('severity')"/>
+            <span t-out="alert.get('text')"/>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Surface 3 — Pro Review Queue
+  ===================================================================== -->
+  <template id="pro_review_queue" name="Ops · Pro Review Queue">
+    <t t-call="alfa_core_ui_sim_ops.ops_layout">
+      <t t-set="surface_title">Pro review queue</t>
+      <t t-set="surface_slug">pro-review-queue</t>
+
+      <div style="margin-bottom: 16px; display: flex; gap: 8px;" data-sim-island="filter">
+        <a class="ac-btn ac-btn--primary" href="#" data-filter="all">All <span t-out="len(ctx.get('reports', []))"/></a>
+        <a class="ac-btn" href="#" data-filter="safety_critical">Safety-critical only</a>
+        <a class="ac-btn" href="#" data-filter="severe">Severe</a>
+        <a class="ac-btn" href="#" data-filter="warn">Warn</a>
+      </div>
+
+      <t t-foreach="ctx.get('reports', [])" t-as="r">
+        <div class="ac-card"
+             style="margin-bottom: 12px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; align-items: center; gap: 16px;"
+             t-attf-data-severity="{{r.get('severity', 'info')}}">
+          <div>
+            <div style="font-family: var(--ac-font-mono); font-size: 12px; color: var(--ac-text-3);" t-out="r.get('name')"/>
+            <div style="font-weight: 600;" t-out="r.get('customer')"/>
+            <div style="color: var(--ac-text-2); font-size: 13px;" t-out="r.get('vehicle')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Primary DTC</div>
+            <div class="ac-dtc-chip" t-attf-class="ac-dtc-chip {{'ac-dtc-chip--safety' if r.get('severity')=='safety_critical' else ''}}" t-out="r.get('primary_dtc')"/>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Confidence</div>
+            <div class="ac-data-grid__value ac-data-grid__value--mono">
+              <t t-out="int((r.get('confidence', 0) or 0) * 100)"/>%
+            </div>
+          </div>
+          <div>
+            <div class="ac-data-grid__label">Severity</div>
+            <span t-attf-class="ac-badge ac-badge--{{'safety' if r.get('severity')=='safety_critical' else 'danger' if r.get('severity')=='severe' else 'warn' if r.get('severity')=='warn' else 'cyan'}}"
+                  t-out="r.get('severity')"/>
+            <div style="color: var(--ac-text-3); font-size: 11px; font-family: var(--ac-font-mono); margin-top: 4px;">
+              <t t-out="r.get('age_hours')"/>h waiting
+            </div>
+          </div>
+          <div>
+            <a class="ac-btn ac-btn--primary" href="#">Review →</a>
+          </div>
+        </div>
+      </t>
+    </t>
+  </template>
+
+  <!-- =====================================================================
+       Surface 4 — Loaner Gantt
+  ===================================================================== -->
+  <template id="loaner_gantt" name="Ops · Loaner Gantt">
+    <t t-call="alfa_core_ui_sim_ops.ops_layout">
+      <t t-set="surface_title">Loaner allocation gantt</t>
+      <t t-set="surface_slug">loaner-gantt</t>
+
+      <div class="ac-card">
+        <div class="ac-eyebrow">Loaner fleet — next 7 days</div>
+        <h3 style="margin-top: 4px;">Allocations</h3>
+
+        <div style="margin-top: 16px; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; min-width: 720px;">
+            <thead>
+              <tr style="border-bottom: 2px solid var(--ac-border-strong);">
+                <th style="padding: 8px; text-align: left; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3); width: 220px;">Vehicle</th>
+                <t t-foreach="ctx.get('day_labels', [])" t-as="label">
+                  <th style="padding: 8px; text-align: center; font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3); border-left: 1px solid var(--ac-border);" t-out="label"/>
+                </t>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="ctx.get('vehicles', [])" t-as="v">
+                <t t-set="v_index" t-value="v_index"/>
+                <tr style="border-bottom: 1px solid var(--ac-border);">
+                  <td style="padding: 12px 8px;">
+                    <div style="font-weight: 600;" t-out="v.get('name')"/>
+                    <div style="color: var(--ac-text-3); font-size: 12px; font-family: var(--ac-font-mono);">
+                      <t t-out="v.get('plate')"/> · <t t-out="v.get('tier')"/>
+                    </div>
+                  </td>
+                  <td colspan="7" style="position: relative; height: 64px; padding: 0;">
+                    <!-- Day grid lines -->
+                    <div style="position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr);">
+                      <t t-foreach="range(7)" t-as="_i">
+                        <div style="border-left: 1px solid var(--ac-border); height: 100%;"/>
+                      </t>
+                    </div>
+                    <!-- Allocation bars for this vehicle -->
+                    <t t-foreach="ctx.get('allocations', [])" t-as="alloc">
+                      <t t-if="alloc.get('vehicle_idx') == v_index">
+                        <t t-set="left_pct" t-value="(alloc.get('day_start', 0) / 7.0) * 100"/>
+                        <t t-set="width_pct" t-value="(alloc.get('day_span', 1) / 7.0) * 100"/>
+                        <div t-attf-style="position: absolute; top: 12px; left: {{left_pct}}%; width: {{width_pct}}%; height: 40px; background: var(--ac-{{'primary' if alloc.get('state')=='active' else 'cyan' if alloc.get('state')=='scheduled' else 'text-3'}}); color: white; padding: 4px 8px; border-radius: 4px; font-family: var(--ac-font-mono); font-size: 11px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                          <strong t-out="alloc.get('customer')"/>
+                          <div style="opacity: 0.85;" t-out="alloc.get('state')"/>
+                        </div>
+                      </t>
+                    </t>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p style="color: var(--ac-text-3); margin-top: 24px; text-align: center; font-family: var(--ac-font-mono); font-size: 12px;">
+        Drag-to-reschedule shipped in a follow-on OWL island.
+      </p>
+    </t>
+  </template>
+</odoo>

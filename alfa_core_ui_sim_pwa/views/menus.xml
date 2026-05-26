@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!--
+      ir.actions.act_url records — one per PWA wireframe surface.
+      These are URL-typed actions: clicking the menu item navigates to
+      the controller route in the same browser tab.
+
+      Slug list deliberately matches the canonical Service Plan §7.2 MVP
+      screen list. "digital-garage" is the chat-side slug for what §7.2
+      calls "Vehicle file"; the rename to /alfacore/sim/pwa/vehicle-file
+      is tracked in the v3.1 corpus-alignment list.
+    -->
+    <record id="action_pwa_onboarding" model="ir.actions.act_url">
+      <field name="name">PWA · Onboarding</field>
+      <field name="url">/alfacore/sim/pwa/onboarding</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_pwa_digital_garage" model="ir.actions.act_url">
+      <field name="name">PWA · Digital Garage</field>
+      <field name="url">/alfacore/sim/pwa/digital-garage</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_pwa_scan_in_progress" model="ir.actions.act_url">
+      <field name="name">PWA · Scan in progress</field>
+      <field name="url">/alfacore/sim/pwa/scan-in-progress</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_pwa_diagnosis" model="ir.actions.act_url">
+      <field name="name">PWA · Diagnosis result</field>
+      <field name="url">/alfacore/sim/pwa/diagnosis</field>
+      <field name="target">self</field>
+    </record>
+
+    <!-- Top-level app entry — shows the SIM-badged Alfa Romeo crest in
+         the Odoo apps launcher. Gated to AlfaCore staff groups so it
+         doesn't appear for Sales-only / Accounting-only users. -->
+    <menuitem id="menu_pwa_sim_root"
+              name="AlfaCore — PWA Sim"
+              sequence="80"
+              web_icon="alfa_core_ui_sim_pwa,static/description/icon.png"/>
+
+    <menuitem id="menu_pwa_onboarding"
+              name="Onboarding"
+              parent="menu_pwa_sim_root"
+              action="action_pwa_onboarding"
+              sequence="10"/>
+
+    <menuitem id="menu_pwa_digital_garage"
+              name="Digital Garage"
+              parent="menu_pwa_sim_root"
+              action="action_pwa_digital_garage"
+              sequence="20"/>
+
+    <menuitem id="menu_pwa_scan_in_progress"
+              name="Scan in progress"
+              parent="menu_pwa_sim_root"
+              action="action_pwa_scan_in_progress"
+              sequence="30"/>
+
+    <menuitem id="menu_pwa_diagnosis"
+              name="Diagnosis result"
+              parent="menu_pwa_sim_root"
+              action="action_pwa_diagnosis"
+              sequence="40"/>
+
+  </data>
+</odoo>

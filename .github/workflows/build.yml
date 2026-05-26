@@ -1,0 +1,71 @@
+name: build
+on:
+  push:
+    tags: ["v*"]
+
+# Tarball packaging lives in sign.yml — the only canonical module
+# artifacts are the Cosign-signed ones. This workflow builds the two
+# container images AlfaCore deploys depend on and pushes them to
+# GitHub Container Registry:
+#   - addon-loader        — Cosign-verifying init container
+#   - odoo-alfacore       — odoo:19 + pyjwt + qdrant-client + numpy
+
+jobs:
+  addon-loader-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write    # required for ghcr.io push
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push addon-loader image
+        uses: docker/build-push-action@v5
+        with:
+          context: addon-loader
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/alfacore-addon-loader:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/alfacore-addon-loader:latest
+          platforms: linux/amd64,linux/arm64
+
+  odoo-alfacore-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push odoo-alfacore runtime image
+        uses: docker/build-push-action@v5
+        with:
+          context: deploy/docker/odoo-alfacore
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/odoo-alfacore:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/odoo-alfacore:19
+            ghcr.io/${{ github.repository_owner }}/odoo-alfacore:latest
+          # Match the upstream odoo:19 base which is amd64-only;
+          # multi-arch would require building Odoo CE for arm64 too.
+          platforms: linux/amd64

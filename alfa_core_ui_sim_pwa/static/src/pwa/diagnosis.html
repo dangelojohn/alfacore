@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>AlfaCore — Diagnosis</title>
+<link rel="stylesheet" href="/alfa_core_ui_sim_pwa/static/src/css/design_system.css">
+<style>
+    .dx-confidence {
+        height: 8px; background: var(--ac-border);
+        border-radius: 4px; overflow: hidden;
+    }
+    .dx-confidence__bar {
+        height: 100%; background: var(--ac-cyan);
+    }
+    .dx-rec {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--ac-border);
+    }
+    .dx-rec:last-child { border-bottom: 0; }
+    .dx-rec__head { display: flex; justify-content: space-between; align-items: start; }
+    .dx-zde-row {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px; background: var(--ac-surface-2);
+        border-radius: 4px; margin-top: 12px;
+    }
+</style>
+</head>
+<body>
+<div class="ac-pwa-shell">
+    <div class="ac-pwa-header">
+        <h2 id="report-name">Diagnosis</h2>
+        <span class="ac-badge ac-badge--warn" id="severity-badge">warn</span>
+    </div>
+    <div class="ac-pwa-body">
+        <div class="ac-eyebrow">AlfaCore diagnosis</div>
+        <h1 style="font-size: 22px; line-height: 1.3;" id="vehicle-label">2018 Alfa Romeo Stelvio Ti</h1>
+
+        <div class="ac-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <strong>Confidence</strong>
+                <span class="ac-data-grid__value--mono" id="confidence-pct">—</span>
+            </div>
+            <div class="dx-confidence"><div class="dx-confidence__bar" id="confidence-bar"></div></div>
+
+            <div class="dx-zde-row" id="zde-row">
+                <span class="ac-badge ac-badge--cyan">ZDE</span>
+                <span style="color: var(--ac-text-2); font-size: 13px;">
+                    Inference ran on-prem. No vehicle data left your shop.
+                </span>
+            </div>
+        </div>
+
+        <div class="ac-eyebrow" style="margin-top: 24px;">Codes detected</div>
+        <div class="ac-card" id="dtc-section">
+            <div style="color: var(--ac-text-3);">Loading…</div>
+        </div>
+
+        <div class="ac-eyebrow" style="margin-top: 24px;">Recommendations</div>
+        <div class="ac-card" id="rec-section">
+            <div style="color: var(--ac-text-3);">Loading…</div>
+        </div>
+
+        <!-- Phase 2 placeholder per honest-boundary discipline.
+             v1.0 ships rule-based output; AI prose narrative is roadmapped. -->
+        <div class="ac-phase2-placeholder" style="margin-top: 16px;">
+            <div class="ac-phase2-placeholder__label">Phase 2 · AI narrative</div>
+            <div>Plain-language explanation of these findings will appear here in v2.0.</div>
+            <div style="margin-top: 12px;">
+                <span class="ac-badge ac-badge--future">future capability</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px; display: grid; gap: 8px;">
+            <a class="ac-btn ac-btn--primary ac-btn--block" href="#">Schedule service for these findings</a>
+            <a class="ac-btn ac-btn--block" href="#">Get a second opinion (Pro tier)</a>
+        </div>
+    </div>
+    <div class="ac-pwa-nav">
+        <a href="/alfacore/sim/pwa/onboarding">Setup</a>
+        <a href="/alfacore/sim/pwa/digital-garage">Garage</a>
+        <a href="/alfacore/sim/pwa/scan-in-progress">Scan</a>
+        <a href="/alfacore/sim/pwa/diagnosis" class="active">Diagnosis</a>
+    </div>
+</div>
+<script src="/alfa_core_ui_sim_pwa/static/src/js/sim_interactions.js"></script>
+<script>
+    // The diagnosis report ID isn't known up-front — the report for John's
+    // demo scan is ref'd as alfa_core_diagnosis.report_dangelo_misfire.
+    // For the wireframe we attempt id=1 (typically the first reviewed report
+    // in a fresh demo install); fall back to mockup payload on miss.
+    const MOCKUP_DATA = {
+        name: "AC-DX-2026-000001",
+        severity: "warn",
+        confidence: 0.78,
+        dtcs: [
+            { code: "P0301", description: "Cylinder 1 misfire detected" },
+            { code: "P0507", description: "Idle speed higher than commanded" },
+        ],
+        recommendations: [
+            {
+                name: "Coil swap diagnostic",
+                description: "Move cylinder 1 coil to cylinder 3, clear codes, 15-minute road test. Confirms coil as root cause without parts.",
+                action_type: "test_drive",
+                confidence: 0.78,
+            },
+            {
+                name: "Replace ignition coil PN 55214664",
+                description: "If coil swap confirms root cause: replace with current service PN. Torque to 8 Nm.",
+                action_type: "replace_part",
+                confidence: 0.78,
+            },
+        ],
+    };
+
+    const SEVERITY_LABELS = {
+        info: "ac-badge--cyan",
+        warn: "ac-badge--warn",
+        severe: "ac-badge--danger",
+        safety_critical: "ac-badge--safety",
+    };
+
+    function renderReport(data) {
+        document.getElementById("report-name").textContent = data.name || "Diagnosis";
+        const sevEl = document.getElementById("severity-badge");
+        sevEl.className = "ac-badge " + (SEVERITY_LABELS[data.severity] || "ac-badge--primary");
+        sevEl.textContent = data.severity || "—";
+        const pct = Math.round((data.confidence || 0) * 100);
+        document.getElementById("confidence-pct").textContent = pct + "%";
+        document.getElementById("confidence-bar").style.width = pct + "%";
+
+        document.getElementById("dtc-section").innerHTML = (data.dtcs || []).map(d =>
+            `<div class="ac-dtc-chip" style="margin-bottom: 8px;">
+                ${d.code} · ${d.description || ""}
+            </div>`
+        ).join("") || '<div style="color: var(--ac-text-3);">No codes recorded.</div>';
+
+        document.getElementById("rec-section").innerHTML = (data.recommendations || []).map(r =>
+            `<div class="dx-rec">
+                <div class="dx-rec__head">
+                    <strong>${r.name}</strong>
+                    <span class="ac-badge ac-badge--primary">${r.action_type || ""}</span>
+                </div>
+                <p style="color: var(--ac-text-2); margin: 8px 0;">${r.description || ""}</p>
+                <small style="color: var(--ac-text-3); font-family: var(--ac-font-mono);">
+                    confidence ${Math.round((r.confidence || 0) * 100)}%
+                </small>
+            </div>`
+        ).join("") || '<div style="color: var(--ac-text-3);">No recommendations.</div>';
+    }
+
+    window.PageInit = async function (pwa) {
+        if (pwa.isMockup()) {
+            renderReport(MOCKUP_DATA);
+            return;
+        }
+        try {
+            const data = await pwa.fetchJson("/api/v1/diagnoses/1");
+            // The API endpoint doesn't return DTCs directly; we keep the
+            // chat-side known codes as a stable display until the API
+            // surface gains a /diagnoses/<id>/dtcs subresource.
+            renderReport({
+                name: data.name,
+                severity: data.severity,
+                confidence: data.confidence,
+                recommendations: data.recommendations,
+                dtcs: MOCKUP_DATA.dtcs,
+            });
+        } catch (e) {
+            // Live diagnosis_id=1 may not exist; fall back to mockup payload.
+            renderReport(MOCKUP_DATA);
+        }
+    };
+</script>
+</body>
+</html>

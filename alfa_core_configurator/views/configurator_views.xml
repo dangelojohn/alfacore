@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_rule_list" model="ir.ui.view">
+    <field name="name">alfa_core_configurator.eligibility_rule.list</field>
+    <field name="model">alfa_core_configurator.eligibility_rule</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="sequence" widget="handle"/>
+        <field name="code"/>
+        <field name="name"/>
+        <field name="blueprint_code"/>
+        <field name="rule_action"/>
+        <field name="active" widget="boolean_toggle"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_rule_form" model="ir.ui.view">
+    <field name="name">alfa_core_configurator.eligibility_rule.form</field>
+    <field name="model">alfa_core_configurator.eligibility_rule</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="code"/>
+              <field name="name"/>
+              <field name="blueprint_code"/>
+              <field name="rule_action"/>
+            </group>
+            <group>
+              <field name="sequence"/>
+              <field name="option_value"/>
+              <field name="active"/>
+            </group>
+          </group>
+          <field name="domain_expression" placeholder="[('vehicle.year','>=',2017)]"/>
+          <field name="explanation" placeholder="Why this rule exists..."/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_rule" model="ir.actions.act_window">
+    <field name="name">Eligibility Rules</field>
+    <field name="res_model">alfa_core_configurator.eligibility_rule</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_session_list" model="ir.ui.view">
+    <field name="name">alfa_core_configurator.session.list</field>
+    <field name="model">alfa_core_configurator.session</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="vehicle_id"/>
+        <field name="partner_id"/>
+        <field name="blueprint_code"/>
+        <field name="state" widget="badge"/>
+        <field name="expires_at"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_session_form" model="ir.ui.view">
+    <field name="name">alfa_core_configurator.session.form</field>
+    <field name="model">alfa_core_configurator.session</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="run_cascade" type="object" string="Run Cascade"
+                  class="btn-primary"/>
+          <button name="touch" type="object" string="Refresh TTL"/>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="vehicle_id"/>
+              <field name="partner_id" readonly="1"/>
+              <field name="subscription_id"/>
+              <field name="blueprint_code"/>
+            </group>
+            <group>
+              <field name="started_at" readonly="1"/>
+              <field name="last_touch_at" readonly="1"/>
+              <field name="expires_at" readonly="1"/>
+              <field name="sale_order_id" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Signals">
+              <field name="signal_ids">
+                <list>
+                  <field name="signal_type"/>
+                  <field name="name"/>
+                  <field name="value"/>
+                  <field name="weight"/>
+                  <field name="confidence"/>
+                  <field name="captured_at"/>
+                </list>
+              </field>
+            </page>
+            <page string="Selected Options">
+              <field name="selected_options_json" widget="ace"/>
+            </page>
+            <page string="Audit Trail">
+              <field name="ledger_ids" readonly="1">
+                <list>
+                  <field name="recorded_at"/>
+                  <field name="entry_type"/>
+                  <field name="name"/>
+                  <field name="rule_id" optional="hide"/>
+                  <field name="actor_user_id"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_session" model="ir.actions.act_window">
+    <field name="name">Configurator Sessions</field>
+    <field name="res_model">alfa_core_configurator.session</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_config_sessions" name="Configurator Sessions"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_session" sequence="50"/>
+  <menuitem id="menu_config_rules" name="Eligibility Rules"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_rule" sequence="80"/>
+
+</odoo>

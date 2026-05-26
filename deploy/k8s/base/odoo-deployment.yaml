@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate    # Odoo holds a writeable filestore PVC; rolling deploys want RWX
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alfacore
+      app.kubernetes.io/component: odoo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alfacore
+        app.kubernetes.io/component: odoo
+    spec:
+      # ----------------------------------------------------------------------
+      # Init-container — pulls + Cosign-verifies the signed module tarball.
+      # Fails the pod if signature verification fails. See addon-loader/.
+      # ----------------------------------------------------------------------
+      initContainers:
+        - name: addon-loader
+          image: ghcr.io/dangelojohn/alfacore-addon-loader:latest
+          env:
+            - name: ADDON_TARBALL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: addon-release
+                  key: tarball_url
+            - name: ADDON_SIGNATURE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: addon-release
+                  key: signature_url
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: alfacore-github-token
+                  key: token
+          volumeMounts:
+            - name: cosign-pubkey
+              mountPath: /mnt/cosign-pubkey
+              readOnly: true
+            - name: extra-addons
+              mountPath: /mnt/extra-addons
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      containers:
+        - name: odoo
+          image: docker.io/odoo:19.0
+          ports:
+            - name: http
+              containerPort: 8069
+            - name: longpoll
+              containerPort: 8072
+          env:
+            - name: HOST
+              value: postgres
+            - name: USER
+              valueFrom:
+                secretKeyRef:
+                  name: alfacore-postgres
+                  key: username
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alfacore-postgres
+                  key: password
+          volumeMounts:
+            - name: filestore
+              mountPath: /var/lib/odoo
+            - name: extra-addons
+              mountPath: /mnt/extra-addons
+              readOnly: true
+            - name: config
+              mountPath: /etc/odoo
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /web/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /web/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 4
+              memory: 8Gi
+      volumes:
+        - name: filestore
+          persistentVolumeClaim:
+            claimName: odoo-filestore
+        - name: extra-addons
+          # Populated by the addon-loader init-container.
+          # emptyDir resets per pod start — ensures each pod gets a fresh
+          # verified extraction, no stale modules from a previous deploy.
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: odoo-config
+        - name: cosign-pubkey
+          configMap:
+            name: alfacore-cosign-pubkey

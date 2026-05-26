@@ -1,0 +1,65 @@
+# Pre-commit hooks for AlfaCore.
+#
+# Catches the bugs that .github/workflows/validate.yml catches on PR — but
+# at commit time, before the push, before the CI cycle is spent. Same logic,
+# same scripts (tools/ci/check_*.py), just running locally.
+#
+# Install once per clone:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Or run `bash tools/setup_dev.sh` to do everything.
+
+repos:
+  # Standard hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-xml
+      - id: check-added-large-files
+        args: ["--maxkb=2048"]
+      - id: check-merge-conflict
+      - id: detect-private-key   # blocks accidentally committing alfacore.cosign.key
+
+  # Python lint + format
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # AlfaCore-specific validators — same scripts CI runs
+  - repo: local
+    hooks:
+      - id: alfacore-manifests
+        name: alfacore — validate __manifest__.py contents
+        entry: python3 tools/ci/check_manifests.py
+        language: system
+        pass_filenames: false
+        files: __manifest__\.py$
+
+      - id: alfacore-manifest-files
+        name: alfacore — verify manifest data/demo files exist
+        entry: python3 tools/ci/check_manifest_files.py
+        language: system
+        pass_filenames: false
+        files: (__manifest__\.py|\.xml|\.csv)$
+
+      - id: alfacore-xml-refs
+        name: alfacore — cross-reference all XML IDs
+        entry: python3 tools/ci/check_xml_refs.py
+        language: system
+        pass_filenames: false
+        files: \.(xml|py)$
+
+      - id: alfacore-python-compile
+        name: alfacore — every .py compiles
+        entry: bash -c 'find alfa_* -name "*.py" -print0 | xargs -0 python3 -m py_compile'
+        language: system
+        pass_filenames: false
+        files: \.py$

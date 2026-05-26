@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="config_jwt_secret_default" model="ir.config_parameter">
+      <field name="key">alfa_core_app_api.jwt_secret</field>
+      <field name="value">CHANGE_ME_IN_PRODUCTION_USE_OPENSSL_RAND</field>
+    </record>
+    <!-- Previous secret slot — initially empty, populated automatically
+         on rotation. Cleared after the 30-day grace window. -->
+    <record id="config_jwt_secret_previous_default" model="ir.config_parameter">
+      <field name="key">alfa_core_app_api.jwt_secret_previous</field>
+      <field name="value"></field>
+    </record>
+  </data>
+</odoo>

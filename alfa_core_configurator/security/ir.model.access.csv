@@ -1,0 +1,11 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_rule_advisor","rule.advisor","model_alfa_core_configurator_eligibility_rule","alfa_core.group_advisor",1,0,0,0
+"access_rule_manager","rule.manager","model_alfa_core_configurator_eligibility_rule","alfa_core.group_manager",1,1,1,1
+"access_signal_advisor","signal.advisor","model_alfa_core_configurator_signal","alfa_core.group_advisor",1,1,1,0
+"access_signal_manager","signal.manager","model_alfa_core_configurator_signal","alfa_core.group_manager",1,1,1,1
+"access_session_advisor","session.advisor","model_alfa_core_configurator_session","alfa_core.group_advisor",1,1,1,0
+"access_session_manager","session.manager","model_alfa_core_configurator_session","alfa_core.group_manager",1,1,1,1
+"access_session_portal","session.portal","model_alfa_core_configurator_session","base.group_portal",1,1,1,0
+"access_ledger_advisor","ledger.advisor","model_alfa_core_configurator_benefit_ledger","alfa_core.group_advisor",1,0,0,0
+"access_ledger_manager","ledger.manager","model_alfa_core_configurator_benefit_ledger","alfa_core.group_manager",1,1,1,1
+"access_ledger_portal","ledger.portal","model_alfa_core_configurator_benefit_ledger","base.group_portal",1,0,0,0

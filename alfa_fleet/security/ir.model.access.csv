@@ -1,0 +1,17 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_platform_user","platform.user","model_alfa_fleet_platform","alfa_core.group_user",1,0,0,0
+"access_platform_manager","platform.manager","model_alfa_fleet_platform","alfa_core.group_manager",1,1,1,1
+"access_engine_user","engine.user","model_alfa_fleet_engine","alfa_core.group_user",1,0,0,0
+"access_engine_manager","engine.manager","model_alfa_fleet_engine","alfa_core.group_manager",1,1,1,1
+"access_trim_user","trim.user","model_alfa_fleet_trim","alfa_core.group_user",1,0,0,0
+"access_trim_manager","trim.manager","model_alfa_fleet_trim","alfa_core.group_manager",1,1,1,1
+"access_vehicle_user","vehicle.user","model_alfa_fleet_vehicle","alfa_core.group_user",1,0,0,0
+"access_vehicle_advisor","vehicle.advisor","model_alfa_fleet_vehicle","alfa_core.group_advisor",1,1,1,0
+"access_vehicle_manager","vehicle.manager","model_alfa_fleet_vehicle","alfa_core.group_manager",1,1,1,1
+"access_vehicle_portal","vehicle.portal","model_alfa_fleet_vehicle","base.group_portal",1,0,0,0
+"access_ownership_advisor","ownership.advisor","model_alfa_fleet_vehicle_ownership","alfa_core.group_advisor",1,1,1,0
+"access_ownership_manager","ownership.manager","model_alfa_fleet_vehicle_ownership","alfa_core.group_manager",1,1,1,1
+"access_ownership_portal","ownership.portal","model_alfa_fleet_vehicle_ownership","base.group_portal",1,0,0,0
+"access_preference_advisor","preference.advisor","model_alfa_fleet_vehicle_preference","alfa_core.group_advisor",1,1,1,0
+"access_preference_manager","preference.manager","model_alfa_fleet_vehicle_preference","alfa_core.group_manager",1,1,1,1
+"access_preference_portal","preference.portal","model_alfa_fleet_vehicle_preference","base.group_portal",1,1,1,0

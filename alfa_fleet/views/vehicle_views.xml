@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_vehicle_list" model="ir.ui.view">
+    <field name="name">alfa_fleet.vehicle.list</field>
+    <field name="model">alfa_fleet.vehicle</field>
+    <field name="arch" type="xml">
+      <list decoration-info="state == 'in_service'" decoration-muted="state in ('sold','totalled')">
+        <field name="display_name"/>
+        <field name="vin"/>
+        <field name="year"/>
+        <field name="model"/>
+        <field name="trim_id"/>
+        <field name="primary_owner_id"/>
+        <field name="last_mileage_km"/>
+        <field name="state" widget="badge"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_vehicle_form" model="ir.ui.view">
+    <field name="name">alfa_fleet.vehicle.form</field>
+    <field name="model">alfa_fleet.vehicle</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_decode_vin" type="object" string="Decode VIN" class="btn-secondary"/>
+          <field name="state" widget="statusbar" statusbar_visible="active,in_service,sold,totalled"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <label for="display_name"/>
+            <h1><field name="display_name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group string="Identity">
+              <field name="vin"/>
+              <field name="license_plate"/>
+              <field name="year"/>
+              <field name="make"/>
+              <field name="model"/>
+            </group>
+            <group string="Classification">
+              <field name="platform_id"/>
+              <field name="engine_id"/>
+              <field name="trim_id"/>
+              <field name="color"/>
+              <field name="color_interior"/>
+            </group>
+          </group>
+          <group string="State">
+            <group>
+              <field name="last_mileage_km"/>
+              <field name="last_mileage_date" readonly="1"/>
+            </group>
+            <group>
+              <field name="primary_owner_id" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Ownership">
+              <field name="ownership_ids">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="partner_id"/>
+                  <field name="role"/>
+                  <field name="start_date"/>
+                  <field name="end_date"/>
+                  <field name="active" widget="boolean_toggle"/>
+                </list>
+              </field>
+            </page>
+            <page string="Preferences">
+              <field name="preference_ids">
+                <list editable="bottom">
+                  <field name="sequence" widget="handle"/>
+                  <field name="category"/>
+                  <field name="name"/>
+                  <field name="brand_preference"/>
+                  <field name="spec"/>
+                  <field name="active" widget="boolean_toggle"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_vehicle_kanban" model="ir.ui.view">
+    <field name="name">alfa_fleet.vehicle.kanban</field>
+    <field name="model">alfa_fleet.vehicle</field>
+    <field name="arch" type="xml">
+      <kanban>
+        <field name="display_name"/>
+        <field name="vin"/>
+        <field name="state"/>
+        <field name="primary_owner_id"/>
+        <field name="last_mileage_km"/>
+        <templates>
+          <t t-name="card">
+            <div class="o_kanban_card_content">
+              <strong><field name="display_name"/></strong>
+              <div class="text-muted small mt-1"><field name="vin"/></div>
+              <div class="mt-2"><field name="primary_owner_id"/></div>
+              <div class="text-muted small"><field name="last_mileage_km"/> km</div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <record id="view_vehicle_search" model="ir.ui.view">
+    <field name="name">alfa_fleet.vehicle.search</field>
+    <field name="model">alfa_fleet.vehicle</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="vin"/>
+        <field name="license_plate"/>
+        <field name="display_name"/>
+        <field name="primary_owner_id"/>
+        <filter name="active" string="Active" domain="[('state','=','active')]"/>
+        <filter name="in_service" string="In Service" domain="[('state','=','in_service')]"/>
+        <!--
+          Odoo 19: Group-By filters live at the search-view top level
+          (preceded by a <separator/>), not wrapped in a <group> element.
+          The old `<group expand="0">` syntax fails RelaxNG validation
+          ("Invalid attribute expand for element group").
+        -->
+        <separator/>
+        <filter name="group_platform" string="Platform" context="{'group_by': 'platform_id'}"/>
+        <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+      </search>
+    </field>
+  </record>
+
+  <record id="action_vehicle" model="ir.actions.act_window">
+    <field name="name">Vehicles</field>
+    <field name="res_model">alfa_fleet.vehicle</field>
+    <field name="view_mode">kanban,list,form</field>
+  </record>
+
+</odoo>

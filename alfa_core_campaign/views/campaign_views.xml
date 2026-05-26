@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_campaign_list" model="ir.ui.view">
+    <field name="name">alfa_core_campaign.campaign.list</field>
+    <field name="model">alfa_core_campaign.campaign</field>
+    <field name="arch" type="xml">
+      <list decoration-danger="severity == 'safety_critical'"
+            decoration-warning="severity == 'high'"
+            decoration-muted="state == 'closed'">
+        <field name="name"/>
+        <field name="campaign_type"/>
+        <field name="source"/>
+        <field name="source_id"/>
+        <field name="severity" widget="badge"/>
+        <field name="issued_date"/>
+        <field name="target_count"/>
+        <field name="notified_count"/>
+        <field name="serviced_count"/>
+        <field name="state" widget="badge"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_campaign_form" model="ir.ui.view">
+    <field name="name">alfa_core_campaign.campaign.form</field>
+    <field name="model">alfa_core_campaign.campaign</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_target_vehicles" type="object"
+                  string="Target Affected Vehicles" class="btn-primary"
+                  invisible="state not in ('draft','imported')"/>
+          <button name="action_close" type="object" string="Close Campaign"
+                  invisible="state not in ('active','notifying')"
+                  confirm="Close this campaign?"/>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="alert alert-danger" role="alert"
+               invisible="severity != 'safety_critical'">
+            <strong>Safety-critical campaign.</strong>
+            Affected vehicles should not be driven until remedied.
+          </div>
+          <div class="oe_title">
+            <label for="name"/>
+            <h1><field name="name"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="campaign_type"/>
+              <field name="source"/>
+              <field name="source_id"/>
+              <field name="source_url" widget="url"/>
+              <field name="manufacturer"/>
+              <field name="issued_date"/>
+              <field name="received_at" readonly="1"/>
+            </group>
+            <group>
+              <field name="severity"/>
+              <field name="affected_components"/>
+              <field name="estimated_remedy_hours"/>
+              <field name="target_count" readonly="1"/>
+              <field name="notified_count" readonly="1"/>
+              <field name="serviced_count" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Risk &amp; Remedy">
+              <group>
+                <field name="risk_summary" nolabel="1" colspan="2"/>
+                <separator string="Remedy"/>
+                <field name="remedy_summary" nolabel="1" colspan="2"/>
+              </group>
+            </page>
+            <page string="Targeting Criteria">
+              <group>
+                <group>
+                  <field name="fits_platform_ids" widget="many2many_tags"/>
+                  <field name="fits_engine_ids" widget="many2many_tags"/>
+                </group>
+                <group>
+                  <field name="affected_year_from"/>
+                  <field name="affected_year_to"/>
+                  <field name="vin_pattern"/>
+                </group>
+              </group>
+            </page>
+            <page string="Targeted Vehicles">
+              <field name="target_ids" readonly="1">
+                <list>
+                  <field name="vehicle_id"/>
+                  <field name="partner_id"/>
+                  <field name="state" widget="badge"/>
+                  <field name="last_notified_at"/>
+                  <field name="notification_attempts"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_campaign" model="ir.actions.act_window">
+    <field name="name">Campaigns</field>
+    <field name="res_model">alfa_core_campaign.campaign</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_target_list" model="ir.ui.view">
+    <field name="name">alfa_core_campaign.target.list</field>
+    <field name="model">alfa_core_campaign.target</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="campaign_id"/>
+        <field name="vehicle_id"/>
+        <field name="partner_id"/>
+        <field name="state" widget="badge"/>
+        <field name="last_notified_at"/>
+        <field name="notification_attempts"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="action_target" model="ir.actions.act_window">
+    <field name="name">Targets</field>
+    <field name="res_model">alfa_core_campaign.target</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_campaigns" name="Recall Campaigns"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_campaign" sequence="80"/>
+  <menuitem id="menu_campaign_targets" name="Campaign Targets"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_target" sequence="85"/>
+
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <!-- Historical example: Stelvio fuel pump recall (illustrative) -->
+    <record id="campaign_stelvio_fuel_pump" model="alfa_core_campaign.campaign">
+      <field name="name">2017–2019 Stelvio Fuel Pump Driver Module</field>
+      <field name="campaign_type">safety_recall</field>
+      <field name="source">nhtsa</field>
+      <field name="source_id">DEMO-22V123000</field>
+      <field name="manufacturer">FCA US LLC</field>
+      <field name="affected_components">Fuel System, Gasoline: Delivery: Fuel Pump</field>
+      <field name="severity">high</field>
+      <field name="issued_date">2022-03-15</field>
+      <field name="risk_summary">Fuel pump driver module may fail intermittently, causing stalling. Increases risk of crash, especially at low speeds.</field>
+      <field name="remedy_summary">Dealer will replace the fuel pump driver module free of charge.</field>
+      <field name="estimated_remedy_hours">1.5</field>
+      <field name="fits_platform_ids" eval="[(4, ref('alfa_fleet.platform_giorgio'))]"/>
+      <field name="affected_year_from">2017</field>
+      <field name="affected_year_to">2019</field>
+      <field name="state">imported</field>
+    </record>
+
+    <!-- TSB example: 2.0L coil pack replacement program -->
+    <record id="campaign_giorgio_coil_tsb" model="alfa_core_campaign.campaign">
+      <field name="name">Giorgio 2.0L Ignition Coil Pack Service Campaign</field>
+      <field name="campaign_type">service_campaign</field>
+      <field name="source">manufacturer</field>
+      <field name="source_id">DEMO-SC-23-001</field>
+      <field name="affected_components">Engine: Ignition: Coil</field>
+      <field name="severity">medium</field>
+      <field name="issued_date">2023-08-22</field>
+      <field name="risk_summary">Coil pack may degrade earlier than expected, causing misfire codes (P030x).</field>
+      <field name="remedy_summary">Coil pack replacement, all 4 cylinders, with updated PN 55214664.</field>
+      <field name="estimated_remedy_hours">1.0</field>
+      <field name="fits_platform_ids" eval="[(4, ref('alfa_fleet.platform_giorgio'))]"/>
+      <field name="fits_engine_ids" eval="[(4, ref('alfa_fleet.engine_gme_2_0t'))]"/>
+      <field name="affected_year_from">2017</field>
+      <field name="affected_year_to">2020</field>
+      <field name="state">imported</field>
+    </record>
+
+  </data>
+</odoo>

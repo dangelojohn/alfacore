@@ -1,0 +1,76 @@
+# Argo CD Application manifest for AlfaCore.
+#
+# Apply once to bootstrap, then Argo CD reconciles continuously from the
+# Forgejo repo. To install:
+#
+#   kubectl apply -n argocd -f deploy/argocd/application.yaml
+#
+# The destination cluster is the cluster Argo CD is running in by default
+# (in-cluster). For multi-cluster (dev k3d + prod CloudClusters), create
+# additional Application manifests with distinct destination.server values.
+#
+# Path/targetRevision conventions:
+# - targetRevision: 'main' for continuous deployment of head, or a vN.M.0 tag
+#   for pinned release deployment
+# - path: deploy/k8s/overlays/{env} — Kustomize overlay per environment
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alfacore-prod
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: alfacore
+    app.kubernetes.io/component: gitops
+    realpartners.tld/customer: alfacore
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dangelojohn/alfacore.git
+    targetRevision: main
+    path: deploy/k8s/overlays/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: alfacore-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m
+  revisionHistoryLimit: 10
+
+---
+# Dev cluster Application — points at the same repo, dev overlay.
+# Install on John's iMac k3d/OrbStack cluster.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alfacore-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: alfacore
+    app.kubernetes.io/component: gitops
+    realpartners.tld/customer: alfacore
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dangelojohn/alfacore.git
+    targetRevision: main
+    path: deploy/k8s/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: alfacore-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

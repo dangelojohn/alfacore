@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_tsb_list" model="ir.ui.view">
+    <field name="name">alfa_tsb.tsb.list</field>
+    <field name="model">alfa_tsb.tsb</field>
+    <field name="arch" type="xml">
+      <list decoration-success="state == 'indexed'"
+            decoration-muted="state == 'retired'">
+        <field name="bulletin_number"/>
+        <field name="name"/>
+        <field name="manufacturer"/>
+        <field name="issued_date"/>
+        <field name="chunk_count"/>
+        <field name="indexed_chunk_count"/>
+        <field name="state" widget="badge"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_tsb_form" model="ir.ui.view">
+    <field name="name">alfa_tsb.tsb.form</field>
+    <field name="model">alfa_tsb.tsb</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_chunk" type="object" string="Chunk Text"
+                  class="btn-primary"
+                  invisible="state not in ('draft','published')"/>
+          <button name="action_index_to_qdrant" type="object"
+                  string="Index to Qdrant" class="btn-primary"
+                  invisible="state != 'chunked'"/>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <label for="name"/>
+            <h1><field name="name"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="bulletin_number"/>
+              <field name="manufacturer"/>
+              <field name="issued_date"/>
+              <field name="source_url" widget="url"/>
+              <field name="supersedes_id"/>
+              <field name="superseded_by_id"/>
+            </group>
+            <group>
+              <field name="related_dtc_codes"/>
+              <field name="affected_year_from"/>
+              <field name="affected_year_to"/>
+              <field name="chunk_count" readonly="1"/>
+              <field name="indexed_chunk_count" readonly="1"/>
+              <field name="indexed_at" readonly="1"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Summary">
+              <group>
+                <field name="summary" nolabel="1"/>
+                <separator string="Symptoms"/>
+                <field name="symptoms" nolabel="1"/>
+                <separator string="Procedure"/>
+                <field name="procedure" nolabel="1"/>
+              </group>
+            </page>
+            <page string="Fitment">
+              <group>
+                <field name="fits_platform_ids" widget="many2many_tags"/>
+                <field name="fits_engine_ids" widget="many2many_tags"/>
+              </group>
+            </page>
+            <page string="Full Text (Ingestion Source)">
+              <field name="full_text" nolabel="1"/>
+            </page>
+            <page string="Chunks">
+              <field name="chunk_ids" readonly="1">
+                <list>
+                  <field name="chunk_index"/>
+                  <field name="text"/>
+                  <field name="qdrant_point_id"/>
+                  <field name="indexed_at"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_tsb" model="ir.actions.act_window">
+    <field name="name">Technical Service Bulletins</field>
+    <field name="res_model">alfa_tsb.tsb</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_collection_list" model="ir.ui.view">
+    <field name="name">alfa_tsb.qdrant_collection.list</field>
+    <field name="model">alfa_tsb.qdrant_collection</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="vector_size"/>
+        <field name="distance_metric"/>
+        <field name="embedding_model"/>
+        <field name="point_count"/>
+        <field name="qdrant_host"/>
+        <field name="last_synced_at"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_collection_form" model="ir.ui.view">
+    <field name="name">alfa_tsb.qdrant_collection.form</field>
+    <field name="model">alfa_tsb.qdrant_collection</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="vector_size"/>
+              <field name="distance_metric"/>
+              <field name="embedding_model"/>
+            </group>
+            <group>
+              <field name="qdrant_host"/>
+              <field name="qdrant_port"/>
+              <field name="point_count"/>
+              <field name="last_synced_at"/>
+            </group>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_collection" model="ir.actions.act_window">
+    <field name="name">Qdrant Collections</field>
+    <field name="res_model">alfa_tsb.qdrant_collection</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_tsb" name="Service Bulletins"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_tsb" sequence="90"/>
+  <menuitem id="menu_qdrant" name="Qdrant Collections"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_collection" sequence="100"
+            groups="alfa_core.group_manager"/>
+
+</odoo>

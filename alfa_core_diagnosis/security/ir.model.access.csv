@@ -1,0 +1,12 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_dtc_user","dtc.user","model_alfa_core_diagnosis_dtc","alfa_core.group_user",1,0,0,0
+"access_dtc_advisor","dtc.advisor","model_alfa_core_diagnosis_dtc","alfa_core.group_advisor",1,1,0,0
+"access_dtc_manager","dtc.manager","model_alfa_core_diagnosis_dtc","alfa_core.group_manager",1,1,1,1
+"access_rule_advisor","rule.advisor","model_alfa_core_diagnosis_triage_rule","alfa_core.group_advisor",1,1,0,0
+"access_rule_manager","rule.manager","model_alfa_core_diagnosis_triage_rule","alfa_core.group_manager",1,1,1,1
+"access_report_advisor","report.advisor","model_alfa_core_diagnosis_report","alfa_core.group_advisor",1,1,1,0
+"access_report_manager","report.manager","model_alfa_core_diagnosis_report","alfa_core.group_manager",1,1,1,1
+"access_report_portal","report.portal","model_alfa_core_diagnosis_report","base.group_portal",1,0,0,0
+"access_rec_advisor","rec.advisor","model_alfa_core_diagnosis_recommendation","alfa_core.group_advisor",1,1,1,0
+"access_rec_manager","rec.manager","model_alfa_core_diagnosis_recommendation","alfa_core.group_manager",1,1,1,1
+"access_rec_portal","rec.portal","model_alfa_core_diagnosis_recommendation","base.group_portal",1,0,0,0

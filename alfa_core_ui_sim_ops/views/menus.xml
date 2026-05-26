@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="action_ops_technician_tablet" model="ir.actions.act_url">
+      <field name="name">Ops · Technician Tablet</field>
+      <field name="url">/alfacore/sim/ops/technician-tablet</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_ops_advisor_cockpit" model="ir.actions.act_url">
+      <field name="name">Ops · Advisor Cockpit</field>
+      <field name="url">/alfacore/sim/ops/advisor-cockpit</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_ops_pro_review_queue" model="ir.actions.act_url">
+      <field name="name">Ops · Pro Review Queue</field>
+      <field name="url">/alfacore/sim/ops/pro-review-queue</field>
+      <field name="target">self</field>
+    </record>
+
+    <record id="action_ops_loaner_gantt" model="ir.actions.act_url">
+      <field name="name">Ops · Loaner Gantt</field>
+      <field name="url">/alfacore/sim/ops/loaner-gantt</field>
+      <field name="target">self</field>
+    </record>
+
+    <menuitem id="menu_ops_sim_root"
+              name="AlfaCore — Ops Sim"
+              sequence="81"
+              web_icon="alfa_core_ui_sim_ops,static/description/icon.png"/>
+
+    <menuitem id="menu_ops_technician_tablet"
+              name="Technician Tablet"
+              parent="menu_ops_sim_root"
+              action="action_ops_technician_tablet"
+              sequence="10"/>
+
+    <menuitem id="menu_ops_advisor_cockpit"
+              name="Advisor Cockpit"
+              parent="menu_ops_sim_root"
+              action="action_ops_advisor_cockpit"
+              sequence="20"/>
+
+    <menuitem id="menu_ops_pro_review_queue"
+              name="Pro Review Queue"
+              parent="menu_ops_sim_root"
+              action="action_ops_pro_review_queue"
+              sequence="30"/>
+
+    <menuitem id="menu_ops_loaner_gantt"
+              name="Loaner Gantt"
+              parent="menu_ops_sim_root"
+              action="action_ops_loaner_gantt"
+              sequence="40"/>
+
+  </data>
+</odoo>

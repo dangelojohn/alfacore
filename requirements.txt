@@ -1,0 +1,14 @@
+# AlfaCore monorepo Python dependencies
+# Auto-synced from module manifests via tools/sync_deps.py
+# Do not edit manually — re-run sync_deps.py after manifest changes
+
+# Runtime dependencies (synced from manifests)
+pyjwt>=0
+qdrant-client>=0
+redis>=0
+requests>=0
+
+# Development tools
+ruff>=0.4.0
+pylint>=3.0.0
+pylint-odoo>=9.0.0

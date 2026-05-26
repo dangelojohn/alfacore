@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_token_list" model="ir.ui.view">
+    <field name="name">alfa_core_app_api.token.list</field>
+    <field name="model">alfa_core_app_api.token</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="jti"/>
+        <field name="partner_id"/>
+        <field name="scope"/>
+        <field name="issued_at"/>
+        <field name="expires_at"/>
+        <field name="last_used_at"/>
+        <field name="state" widget="badge"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_token_form" model="ir.ui.view">
+    <field name="name">alfa_core_app_api.token.form</field>
+    <field name="model">alfa_core_app_api.token</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="action_revoke" type="object" string="Revoke"
+                  invisible="state != 'active'" confirm="Revoke this token? Cannot undo."/>
+        </header>
+        <sheet>
+          <group>
+            <group>
+              <field name="jti"/>
+              <field name="partner_id"/>
+              <field name="scope"/>
+              <field name="state"/>
+            </group>
+            <group>
+              <field name="issued_at"/>
+              <field name="expires_at"/>
+              <field name="last_used_at"/>
+              <field name="last_used_ip"/>
+            </group>
+          </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_token" model="ir.actions.act_window">
+    <field name="name">API Tokens</field>
+    <field name="res_model">alfa_core_app_api.token</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_api_tokens" name="API Tokens"
+            parent="alfa_core.menu_alfa_core_configuration"
+            action="action_token" sequence="95"
+            groups="alfa_core.group_manager"/>
+
+</odoo>

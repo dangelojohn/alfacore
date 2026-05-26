@@ -1,0 +1,71 @@
+name: validate
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Fast pre-flight gate. Runs on every PR before lint/test workflows are spent.
+# Catches the cheap, high-frequency bugs: syntax errors, malformed manifests,
+# demo data referencing XML IDs that don't exist, manifest demo lists pointing
+# at files that aren't there.
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    name: Python compile + XML parse
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Python compile every .py
+        run: |
+          set -e
+          find alfa_* -name "*.py" -print0 | xargs -0 python3 -m py_compile
+          echo "All Python files compile."
+
+      - name: XML parse every .xml
+        run: |
+          set -e
+          find alfa_* -name "*.xml" | while read f; do
+            python3 -c "import xml.etree.ElementTree as ET; ET.parse('$f')" \
+              || { echo "FAIL: $f"; exit 1; }
+          done
+          echo "All XML files parse."
+
+      - name: CSV header check (ir.model.access.csv)
+        run: |
+          set -e
+          for csv in $(find alfa_* -name "ir.model.access.csv"); do
+            head -1 "$csv" | tr -d '"' | grep -q "perm_read,perm_write,perm_create,perm_unlink" \
+              || { echo "FAIL: $csv missing canonical header"; exit 1; }
+          done
+          echo "All access CSVs have canonical header."
+
+  manifests:
+    runs-on: ubuntu-latest
+    name: Manifest sanity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Parse and validate every __manifest__.py
+        run: python3 tools/ci/check_manifests.py
+
+      - name: Verify manifest data + demo files exist on disk
+        run: python3 tools/ci/check_manifest_files.py
+
+  xml_ids:
+    runs-on: ubuntu-latest
+    name: Demo XML-ID cross-reference
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cross-reference all XML refs
+        run: python3 tools/ci/check_xml_refs.py

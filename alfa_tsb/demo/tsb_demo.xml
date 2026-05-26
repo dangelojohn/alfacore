@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+
+    <record id="collection_alfa_tsb_v1" model="alfa_tsb.qdrant_collection">
+      <field name="name">alfa_tsb_v1</field>
+      <field name="vector_size">1024</field>
+      <field name="distance_metric">cosine</field>
+      <field name="embedding_model">bge-large-en-v1.5</field>
+    </record>
+
+    <record id="tsb_giorgio_coil_misfire" model="alfa_tsb.tsb">
+      <field name="name">Giorgio 2.0L Misfire Diagnosis — Coil Pack</field>
+      <field name="bulletin_number">DEMO-18-080-21</field>
+      <field name="manufacturer">Alfa Romeo</field>
+      <field name="issued_date">2021-08-15</field>
+      <field name="summary">Misfire codes P0301–P0304 on 2017–2020 Giorgio 2.0L often trace to a single failing ignition coil, not the spark plug. New PN 55214664 supersedes earlier coil PN.</field>
+      <field name="symptoms">Rough idle. Intermittent stumble under load. Check engine light flashing during sustained misfire. DTCs P0301, P0302, P0303, or P0304.</field>
+      <field name="procedure">1. Read freeze frame data. 2. Note which cylinder. 3. Swap coils between misfiring and adjacent cylinder. 4. Clear codes, road test. 5. If misfire follows the coil, replace with PN 55214664. 6. Do not replace plugs unless they show wear or oil contamination.</field>
+      <field name="related_dtc_codes">P0301,P0302,P0303,P0304</field>
+      <field name="fits_platform_ids" eval="[(4, ref('alfa_fleet.platform_giorgio'))]"/>
+      <field name="fits_engine_ids" eval="[(4, ref('alfa_fleet.engine_gme_2_0t'))]"/>
+      <field name="affected_year_from">2017</field>
+      <field name="affected_year_to">2020</field>
+      <field name="full_text">Issue Description
+
+Customers may report rough idle, intermittent stumble under load, or check engine light. Diagnostic trouble codes (DTCs) P0301, P0302, P0303, or P0304 (misfire detected, cylinder 1-4) may be stored in the engine control module (ECM).
+
+Root Cause
+
+The 2.0L turbocharged GME engine uses individual ignition coils per cylinder. The original-production coil (PN 68189192AA) has shown elevated field failure rates in the 50,000–80,000 km range. Updated coil PN 55214664 incorporates revised internal winding insulation and is the current service replacement.
+
+Diagnostic Procedure
+
+Step 1 — Read freeze frame data via OBD-II.
+Step 2 — Identify the misfiring cylinder from the specific DTC.
+Step 3 — Swap the suspected coil with the coil from an adjacent cylinder.
+Step 4 — Clear codes and road-test for at least 15 minutes including highway driving.
+Step 5 — Re-scan. If the misfire DTC has followed the coil to the new cylinder, the coil is confirmed faulty.
+
+Repair
+
+Replace the confirmed faulty coil with PN 55214664. Torque coil bolt to 8 Nm. Do not replace spark plugs as a preventive measure unless inspection shows wear, oil fouling, or carbon deposits beyond service limits.
+
+Field Notes
+
+If multiple coils fail within a short interval, inspect the wiring harness for chafing near the valve cover. A small percentage of cases have traced to harness damage rather than coil failure.</field>
+      <field name="state">published</field>
+    </record>
+
+  </data>
+</odoo>

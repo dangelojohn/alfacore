@@ -1,0 +1,12 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_tmpl_user","tmpl.user","model_alfa_core_inspection_template","alfa_core.group_user",1,0,0,0
+"access_tmpl_advisor","tmpl.advisor","model_alfa_core_inspection_template","alfa_core.group_advisor",1,0,0,0
+"access_tmpl_manager","tmpl.manager","model_alfa_core_inspection_template","alfa_core.group_manager",1,1,1,1
+"access_tmpl_item_advisor","tmpl.item.advisor","model_alfa_core_inspection_template_item","alfa_core.group_advisor",1,0,0,0
+"access_tmpl_item_manager","tmpl.item.manager","model_alfa_core_inspection_template_item","alfa_core.group_manager",1,1,1,1
+"access_inspection_advisor","insp.advisor","model_alfa_core_inspection_inspection","alfa_core.group_advisor",1,1,1,0
+"access_inspection_manager","insp.manager","model_alfa_core_inspection_inspection","alfa_core.group_manager",1,1,1,1
+"access_inspection_portal","insp.portal","model_alfa_core_inspection_inspection","base.group_portal",1,0,0,0
+"access_finding_advisor","finding.advisor","model_alfa_core_inspection_finding","alfa_core.group_advisor",1,1,1,0
+"access_finding_manager","finding.manager","model_alfa_core_inspection_finding","alfa_core.group_manager",1,1,1,1
+"access_finding_portal","finding.portal","model_alfa_core_inspection_finding","base.group_portal",1,1,0,0

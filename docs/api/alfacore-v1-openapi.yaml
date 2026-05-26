@@ -1,0 +1,604 @@
+openapi: 3.1.0
+info:
+  title: AlfaCore API
+  version: 1.0.0
+  description: |
+    REST API for the AlfaCore companion PWA. JWT bearer auth, rate-limited
+    by token and source IP, dual-secret signing with 30-day rotation grace.
+
+    See `docs/api/README.md` for client integration notes.
+
+    **Authentication.** POST `/auth` with portal credentials returns a JWT.
+    Pass it as `Authorization: Bearer <token>` on every subsequent call.
+    Tokens default to 30-day TTL; the server tracks them in the
+    `alfa_core_app_api.token` model and revocation is immediate.
+
+    **Rate limiting.** All endpoints are rate-limited. On denial:
+    HTTP 429 with `Retry-After: N` header and a JSON body containing
+    `retry_after_seconds`. See per-path `x-alfacore-rate-limit` for the
+    profile applied.
+
+    **Ownership.** Vehicle-scoped endpoints (scans upload, preferences,
+    recalls) verify the requesting partner has an active `alfa_fleet.vehicle_ownership`
+    record for the target VIN. Cross-vehicle access returns HTTP 403.
+  contact:
+    name: REAL Partners / OdooIQ
+    url: https://odooiq.com
+    email: dangelo.john@gmail.com
+  license:
+    name: LGPL-3.0-only
+    identifier: LGPL-3.0-only
+
+servers:
+  - url: http://localhost:8069
+    description: Local dev (docker-compose.dev.yml)
+  - url: https://alfacore.local
+    description: K3d dev cluster on John's iMac
+  - url: https://alfacore.realpartners.tld
+    description: Production (CloudClusters)
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: auth
+    description: Authentication
+  - name: scans
+    description: Scan session upload
+  - name: diagnoses
+    description: AI diagnosis reports
+  - name: vehicles
+    description: Vehicle-scoped reads (preferences, recalls)
+
+paths:
+  /api/v1/auth:
+    post:
+      tags: [auth]
+      summary: Issue a JWT for a portal user
+      operationId: issueToken
+      security: []
+      x-alfacore-rate-limit:
+        profile: auth
+        sustained_per_minute: 10
+        burst: 5
+        scope: per-source-ip
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Authentication succeeded; JWT returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Missing credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing:
+                  value:
+                    error: missing_credentials
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                bad_password:
+                  value:
+                    error: invalid_credentials
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/scans:
+    post:
+      tags: [scans]
+      summary: Upload a scan session
+      operationId: uploadScan
+      x-alfacore-rate-limit:
+        profile: api_read
+        sustained_per_minute: 120
+        burst: 30
+        scope: per-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanUploadRequest'
+      responses:
+        '200':
+          description: Scan session persisted; DTCs and PIDs materialized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanUploadResponse'
+        '400':
+          description: Missing vehicle_vin.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NotAuthorized'
+        '404':
+          description: Vehicle not found for given VIN.
+        '412':
+          description: |
+            No paired scanner device exists for this partner + vehicle.
+            Customer must complete device pairing flow before upload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                no_pair:
+                  value:
+                    error: no_paired_device_for_vehicle
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/diagnoses/{report_id}:
+    get:
+      tags: [diagnoses]
+      summary: Retrieve a diagnosis report
+      operationId: getDiagnosis
+      x-alfacore-rate-limit:
+        profile: api_read
+        sustained_per_minute: 120
+        burst: 30
+        scope: per-token
+      parameters:
+        - in: path
+          name: report_id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Diagnosis report.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagnosisReport'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NotAuthorized'
+        '404':
+          description: Report does not exist.
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/vehicles/{vin}/preferences:
+    get:
+      tags: [vehicles]
+      summary: Get vehicle service preferences
+      description: |
+        Returns the customer's recorded preferences for this vehicle:
+        oil brand, tire spec, alignment torque, etc. Used by the PWA
+        to pre-fill service requests and by the technician tablet to
+        match historic preference on each visit.
+      operationId: getVehiclePreferences
+      x-alfacore-rate-limit:
+        profile: api_read
+        sustained_per_minute: 120
+        burst: 30
+        scope: per-token
+      parameters:
+        - $ref: '#/components/parameters/VinPathParam'
+      responses:
+        '200':
+          description: Vehicle preferences.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehiclePreferencesResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NotAuthorized'
+        '404':
+          description: Vehicle not found.
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+  /api/v1/vehicles/{vin}/recalls:
+    get:
+      tags: [vehicles]
+      summary: List open recall campaigns for a vehicle
+      description: |
+        Returns all open campaign targets for this vehicle (states
+        identified, notified, acknowledged, scheduled). Excludes
+        serviced and customer-declined.
+
+        The top-level `do_not_drive` boolean is true when ANY open
+        recall has `severity = safety_critical` — the PWA should
+        render a prominent banner in this case.
+      operationId: getVehicleRecalls
+      x-alfacore-rate-limit:
+        profile: api_read
+        sustained_per_minute: 120
+        burst: 30
+        scope: per-token
+      parameters:
+        - $ref: '#/components/parameters/VinPathParam'
+      responses:
+        '200':
+          description: Open recall campaigns.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecallsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/NotAuthorized'
+        '404':
+          description: Vehicle not found.
+        '429':
+          $ref: '#/components/responses/RateLimited'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        JWT issued by POST /api/v1/auth. Signed HS256 with a server-side
+        secret managed by alfa_core_app_api.jwt_secret_manager. During
+        secret rotation, tokens signed with the previous secret remain
+        valid until they naturally expire (30-day grace window).
+
+        Token payload:
+          sub    Partner ID
+          jti    Unique token identifier (revocation key)
+          scope  Always "pwa" for tokens issued here
+          iat    Issued-at timestamp
+          exp    Expiry timestamp (default = iat + 30d)
+
+  parameters:
+    VinPathParam:
+      in: path
+      name: vin
+      required: true
+      description: 17-character VIN. Validation matches `^[A-HJ-NPR-Z0-9]{17}$`.
+      schema:
+        type: string
+        minLength: 17
+        maxLength: 17
+        pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+
+  responses:
+    Unauthorized:
+      description: Missing, invalid, expired, or revoked bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            missing_token:
+              value:
+                error: missing_bearer_token
+            expired:
+              value:
+                error: token_expired
+            invalid:
+              value:
+                error: invalid_token
+            revoked:
+              value:
+                error: token_revoked_or_unknown
+
+    NotAuthorized:
+      description: Authenticated, but not authorized for the requested resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            not_owner:
+              value:
+                error: not_authorized_for_this_vehicle
+
+    RateLimited:
+      description: Request rate exceeded the bucket capacity for this profile.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+          description: Seconds to wait before retrying.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RateLimitError'
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: Machine-readable error code.
+
+    RateLimitError:
+      type: object
+      required: [error, retry_after_seconds]
+      properties:
+        error:
+          type: string
+          const: rate_limit_exceeded
+        retry_after_seconds:
+          type: number
+          format: float
+          minimum: 0
+          description: Estimated seconds until the request would succeed.
+
+    AuthRequest:
+      type: object
+      required: [login, password]
+      properties:
+        login:
+          type: string
+          description: Portal user email or login.
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      required: [token, expires_at, partner]
+      properties:
+        token:
+          type: string
+          description: JWT bearer token.
+        expires_at:
+          type: string
+          format: date-time
+        partner:
+          $ref: '#/components/schemas/Partner'
+
+    Partner:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    DTCUploadEntry:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+          description: DTC code, e.g. "P0301".
+          pattern: '^[PBCU][0-9A-F]{4}$'
+        status:
+          type: string
+          enum: [active, pending, history, permanent]
+          default: active
+        module:
+          type: string
+          description: Source ECU module name, e.g. "ECM".
+        freeze_frame:
+          type: string
+          description: Freeze-frame snapshot text.
+        raw:
+          type: string
+          description: Raw payload (hex or vendor-specific format).
+
+    PIDUploadEntry:
+      type: object
+      required: [pid, value]
+      properties:
+        pid:
+          type: string
+          description: PID identifier, e.g. "010C".
+        name:
+          type: string
+          description: Human-readable PID name.
+        value:
+          type: string
+          description: Reading value (string for unit-flexibility).
+        units:
+          type: string
+
+    ScanUploadRequest:
+      type: object
+      required: [vehicle_vin]
+      properties:
+        vehicle_vin:
+          type: string
+          pattern: '^[A-HJ-NPR-Z0-9]{17}$'
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+        modules_scanned:
+          type: string
+          description: Comma-separated module list, e.g. "ECM,TCM,ABS".
+        battery_voltage:
+          type: number
+          format: float
+        mileage_at_scan:
+          type: integer
+          minimum: 0
+        dtcs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DTCUploadEntry'
+        pids:
+          type: array
+          items:
+            $ref: '#/components/schemas/PIDUploadEntry'
+
+    ScanUploadResponse:
+      type: object
+      required: [session_id, name, dtc_count]
+      properties:
+        session_id:
+          type: integer
+        name:
+          type: string
+          description: AC-SCAN-YYYY-NNNNNN reference.
+        dtc_count:
+          type: integer
+          minimum: 0
+
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        action_type:
+          type: string
+          enum: [inspect, replace_part, service, test_drive, recall_check, monitor, do_not_drive]
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+
+    DiagnosisReport:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          description: AC-DX-YYYY-NNNNNN reference.
+        vehicle_vin:
+          type: string
+        state:
+          type: string
+          enum: [draft, ai_generated, pending_review, reviewed, delivered, disputed]
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        severity:
+          type: string
+          enum: [info, warn, severe, safety_critical]
+        summary:
+          type: string
+          description: Customer-facing plain-language summary.
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+
+    VehiclePreference:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [oil, brake_fluid, coolant, transmission_fluid, transfer_case,
+                 differential, washer_fluid, tire, alignment, battery, other]
+        name:
+          type: string
+        spec:
+          type: string
+        brand_preference:
+          type: string
+
+    VehiclePreferencesResponse:
+      type: object
+      properties:
+        vin:
+          type: string
+        preferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehiclePreference'
+
+    Recall:
+      type: object
+      properties:
+        campaign_id:
+          type: integer
+        campaign_name:
+          type: string
+        source:
+          type: string
+          enum: [nhtsa, transport_canada, manufacturer, other]
+        source_id:
+          type: string
+          description: e.g. NHTSA Campaign Number "23V456000".
+        source_url:
+          type: string
+          format: uri
+          nullable: true
+        severity:
+          type: string
+          enum: [safety_critical, high, medium, low]
+        campaign_type:
+          type: string
+          enum: [safety_recall, emissions_recall, service_campaign, tsb, warranty_extension]
+        affected_components:
+          type: string
+        risk_summary:
+          type: string
+        remedy_summary:
+          type: string
+        estimated_remedy_hours:
+          type: number
+          format: float
+        issued_date:
+          type: string
+          format: date
+          nullable: true
+        target_state:
+          type: string
+          enum: [identified, notified, acknowledged, scheduled]
+          description: |
+            The customer's progress on this recall. Serviced and declined
+            targets are excluded from this endpoint.
+        last_notified_at:
+          type: string
+          format: date-time
+          nullable: true
+        notification_attempts:
+          type: integer
+          minimum: 0
+        scheduled_so:
+          type: string
+          nullable: true
+          description: Service order reference, if booked.
+
+    RecallsResponse:
+      type: object
+      required: [vin, open_recall_count, do_not_drive, recalls]
+      properties:
+        vin:
+          type: string
+        open_recall_count:
+          type: integer
+          minimum: 0
+        do_not_drive:
+          type: boolean
+          description: |
+            True iff any open recall has severity = safety_critical.
+            The PWA should display a prominent do-not-drive banner.
+        recalls:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recall'

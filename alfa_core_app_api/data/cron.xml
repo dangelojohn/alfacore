@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="cron_expire_stale_tokens" model="ir.cron">
+      <field name="name">AlfaCore: expire stale API tokens</field>
+      <field name="model_id" ref="model_alfa_core_app_api_token"/>
+      <field name="state">code</field>
+      <field name="code">model.expire_stale()</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">hours</field>
+      <field name="active" eval="True"/>
+    </record>
+    <!-- Auto-clear the previous JWT secret after the grace window elapses.
+         Runs daily; only clears if rotated_at is more than GRACE_DAYS old. -->
+    <record id="cron_clear_stale_previous_jwt" model="ir.cron">
+      <field name="name">AlfaCore: clear stale previous JWT secret</field>
+      <field name="model_id" ref="model_alfa_core_app_api_jwt_secret_manager"/>
+      <field name="state">code</field>
+      <field name="code">model.cron_clear_stale_previous()</field>
+      <field name="interval_number">1</field>
+      <field name="interval_type">days</field>
+      <field name="active" eval="True"/>
+    </record>
+  </data>
+</odoo>

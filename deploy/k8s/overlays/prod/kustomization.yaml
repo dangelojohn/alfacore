@@ -1,0 +1,48 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Production overlay for CloudClusters managed K8s.
+# - Postgres credentials sourced from external-secrets operator
+# - Real TLS via cert-manager + Let's Encrypt
+# - 1 Odoo replica, Recreate strategy (base default — matches RWO filestore PVC).
+#   Multi-replica HA requires either an RWX storage class for the filestore,
+#   S3-backed ir_attachment.location, or Redis session_store. Defer until
+#   scale demands it. Pattern 10 — honest boundaries.
+# - Resource limits aligned with CloudClusters node sizes
+#
+# Production deploys are tag-pinned. Bump both addon-release-configmap.yaml
+# and the addon-loader image tag patch below to the same release tag,
+# commit on main, Argo CD reconciles.
+
+namespace: alfacore-prod
+
+resources:
+  - ../../base
+  - external-secret.yaml
+  - github-token-external-secret.yaml
+  - addon-release-configmap.yaml
+
+patches:
+  - target:
+      kind: Deployment
+      name: odoo
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/initContainers/0/image
+        value: ghcr.io/dangelojohn/alfacore-addon-loader:v1.0.0
+  - target:
+      kind: Ingress
+      name: alfacore
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: alfacore.realpartners.tld
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: alfacore.realpartners.tld
+
+configMapGenerator:
+  - name: odoo-config
+    behavior: replace
+    files:
+      - odoo.conf

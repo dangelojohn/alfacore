@@ -1,0 +1,138 @@
+name: test
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Real Odoo 19 CE test execution. Postgres as a service container, the
+# repo mounted as a custom addons path, odoo-bin --test-enable per
+# matrix group.
+#
+# Strategy: matrix over module groups so failures localize, and so a
+# single module's flaky test doesn't block the whole batch from reporting.
+
+jobs:
+  odoo-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module-group:
+          - foundation        # alfa_core, alfa_fleet, alfa_parts, alfa_service
+          - agentic_core      # alfa_core_scanner, alfa_core_diagnosis, alfa_core_configurator
+          - service_ops       # alfa_core_inspection, alfa_core_loaner, alfa_core_portal
+          - integrations      # alfa_core_app_api, alfa_core_campaign, alfa_tsb
+          - ui_sim            # alfa_core_ui_sim_pwa, alfa_core_ui_sim_ops, alfa_core_ui_sim
+          - smoke_all         # post_install install-smoke across every module
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: extra-addons
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev libxml2-dev libxslt1-dev \
+            libldap2-dev libsasl2-dev libssl-dev libjpeg-dev zlib1g-dev \
+            libfreetype6-dev liblcms2-dev libwebp-dev libharfbuzz-dev \
+            libfribidi-dev libxcb1-dev fonts-liberation
+
+      - name: Install pyjwt + qdrant-client (module external deps)
+        run: pip install pyjwt qdrant-client
+
+      - name: Checkout Odoo 19 CE
+        uses: actions/checkout@v4
+        with:
+          repository: odoo/odoo
+          ref: "19.0"
+          path: odoo
+
+      - name: Install Odoo Python dependencies
+        run: pip install -r odoo/requirements.txt
+
+      - name: Resolve module list for this group
+        id: modules
+        run: |
+          case "${{ matrix.module-group }}" in
+            foundation)
+              echo "list=alfa_core,alfa_fleet,alfa_parts,alfa_service" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_sprint1,alfacore_sprint2,alfacore_sprint3,alfacore_sprint4" >> $GITHUB_OUTPUT
+              ;;
+            agentic_core)
+              echo "list=alfa_core_scanner,alfa_core_diagnosis,alfa_core_configurator" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_sprint5,alfacore_sprint6,alfacore_sprint7,alfacore_sprint7_workflow" >> $GITHUB_OUTPUT
+              ;;
+            service_ops)
+              echo "list=alfa_core_inspection,alfa_core_loaner,alfa_core_portal" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_sprint8,alfacore_sprint9,alfacore_smoke" >> $GITHUB_OUTPUT
+              ;;
+            integrations)
+              echo "list=alfa_core_app_api,alfa_core_campaign,alfa_tsb" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_sprint11,alfacore_sprint12,alfacore_sprint13" >> $GITHUB_OUTPUT
+              ;;
+            ui_sim)
+              echo "list=alfa_core_ui_sim_pwa,alfa_core_ui_sim_ops,alfa_core_ui_sim" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_smoke" >> $GITHUB_OUTPUT
+              ;;
+            smoke_all)
+              # Every module's tests/test_install.py is tagged
+              # alfacore_smoke. This job runs the install smoke across
+              # all 14 modules in one pass, separate from sprint-tagged
+              # feature tests — clean "did the install path break?" signal.
+              echo "list=alfa_core,alfa_fleet,alfa_parts,alfa_service,alfa_core_scanner,alfa_core_diagnosis,alfa_core_configurator,alfa_core_inspection,alfa_core_loaner,alfa_core_portal,alfa_core_app_api,alfa_core_campaign,alfa_tsb,alfa_core_multi_loc,alfa_core_ui_sim_pwa,alfa_core_ui_sim_ops,alfa_core_ui_sim" >> $GITHUB_OUTPUT
+              echo "tags=alfacore_smoke" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+      - name: Install + test modules
+        env:
+          PGHOST: 127.0.0.1
+          PGUSER: odoo
+          PGPASSWORD: odoo
+        run: |
+          python3 odoo/odoo-bin \
+            --addons-path=odoo/addons,extra-addons \
+            -d "test_${{ matrix.module-group }}_$GITHUB_RUN_ID" \
+            -i "${{ steps.modules.outputs.list }}" \
+            --test-enable \
+            --test-tags "${{ steps.modules.outputs.tags }}" \
+            --stop-after-init \
+            --log-level=info \
+            --db_host=127.0.0.1 \
+            --db_user=odoo \
+            --db_password=odoo \
+            2>&1 | tee test-output.log
+          # Fail on any FAIL: or ERROR in test output (Odoo doesn't always exit nonzero)
+          if grep -E "^(FAIL|ERROR):" test-output.log; then
+            echo "Test failures detected in output."
+            exit 1
+          fi
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-${{ matrix.module-group }}
+          path: test-output.log

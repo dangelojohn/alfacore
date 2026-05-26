@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>AlfaCore — Digital Garage</title>
+<link rel="stylesheet" href="/alfa_core_ui_sim_pwa/static/src/css/design_system.css">
+<style>
+    .dg-hero {
+        background: linear-gradient(135deg, var(--ac-primary) 0%, #1a5a8f 100%);
+        color: white;
+        padding: 24px 20px;
+        margin: -20px -20px 20px -20px;
+    }
+    .dg-hero h2 { color: white; margin-top: 0; }
+    .dg-hero__sub { font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.8; }
+    .dg-stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .dg-stat { background: var(--ac-surface-2); padding: 12px; border-radius: 8px; }
+    .dg-stat__label { font-family: var(--ac-font-mono); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--ac-text-3); }
+    .dg-stat__value { font-size: 20px; font-weight: 700; color: var(--ac-primary); }
+    .dg-section-head { font-family: var(--ac-font-mono); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ac-text-3); margin: 24px 0 8px; }
+    .dg-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--ac-border); }
+    .dg-row:last-child { border: 0; }
+</style>
+</head>
+<body>
+<div class="ac-pwa-shell">
+    <div class="ac-pwa-header">
+        <h2>Digital Garage</h2>
+        <span class="ac-badge ac-badge--cyan">premium</span>
+    </div>
+    <div class="ac-pwa-body">
+        <div class="dg-hero">
+            <span class="dg-hero__sub">Your vehicle</span>
+            <h2 id="vehicle-name">Loading…</h2>
+            <div id="vehicle-vin" style="font-family: var(--ac-font-mono); font-size: 12px; opacity: 0.85;">—</div>
+        </div>
+
+        <div class="dg-stat-row">
+            <div class="dg-stat">
+                <div class="dg-stat__label">Mileage</div>
+                <div class="dg-stat__value" id="stat-mileage">—</div>
+            </div>
+            <div class="dg-stat">
+                <div class="dg-stat__label">Open recalls</div>
+                <div class="dg-stat__value" id="stat-recalls">—</div>
+            </div>
+        </div>
+
+        <div id="safety-banner-slot"></div>
+
+        <div class="dg-section-head">Open recall campaigns</div>
+        <div id="recalls-list" class="ac-card">
+            <div style="color: var(--ac-text-3);">Loading…</div>
+        </div>
+
+        <div class="dg-section-head">Vehicle preferences</div>
+        <div id="prefs-list" class="ac-card">
+            <div style="color: var(--ac-text-3);">Loading…</div>
+        </div>
+
+        <div class="dg-section-head">Next service window</div>
+        <div class="ac-card">
+            <strong>Spring readiness inspection</strong>
+            <p style="color: var(--ac-text-2); margin: 8px 0;">Post-winter underbody, brake fluid, and tire-tread check. Pro tier includes complimentary loaner.</p>
+            <a class="ac-btn ac-btn--primary ac-btn--block" href="#">Schedule</a>
+        </div>
+    </div>
+    <div class="ac-pwa-nav">
+        <a href="/alfacore/sim/pwa/onboarding">Setup</a>
+        <a href="/alfacore/sim/pwa/digital-garage" class="active">Garage</a>
+        <a href="/alfacore/sim/pwa/scan-in-progress">Scan</a>
+        <a href="/alfacore/sim/pwa/diagnosis">Diagnosis</a>
+    </div>
+</div>
+<script src="/alfa_core_ui_sim_pwa/static/src/js/sim_interactions.js"></script>
+<script>
+    const VIN = "ZASFAKBN3J7C12345";
+    const MOCKUP_DATA = {
+        vin: VIN,
+        vehicle_name: "2018 Alfa Romeo Stelvio Ti",
+        mileage_km: 89247,
+        do_not_drive: false,
+        recalls: [
+            {
+                campaign_name: "Giorgio 2.0L Ignition Coil Pack Service Campaign",
+                severity: "medium",
+                affected_components: "Engine: Ignition: Coil",
+                target_state: "notified",
+            }
+        ],
+        preferences: [
+            { category: "oil", name: "Selenia 5W-40", brand_preference: "Selenia" },
+            { category: "tire", name: "Pirelli P Zero", brand_preference: "Pirelli" },
+        ],
+    };
+
+    function renderPage(data) {
+        document.getElementById("vehicle-name").textContent = data.vehicle_name;
+        document.getElementById("vehicle-vin").textContent = "VIN " + data.vin;
+        document.getElementById("stat-mileage").textContent = data.mileage_km.toLocaleString() + " km";
+        document.getElementById("stat-recalls").textContent = data.recalls.length;
+
+        if (data.do_not_drive) {
+            document.getElementById("safety-banner-slot").innerHTML =
+                '<div class="ac-safety-banner">' +
+                '<strong>DO NOT DRIVE</strong>' +
+                'A safety-critical recall is open for this vehicle. ' +
+                'Schedule service immediately.</div>';
+        }
+
+        const recallsEl = document.getElementById("recalls-list");
+        if (!data.recalls.length) {
+            recallsEl.innerHTML = '<div style="color: var(--ac-success);">No open recalls.</div>';
+        } else {
+            recallsEl.innerHTML = data.recalls.map(r => {
+                const sevClass = r.severity === "safety_critical" ? "danger"
+                              : r.severity === "high" ? "warn" : "primary";
+                return `<div style="margin-bottom: 12px;">
+                    <span class="ac-badge ac-badge--${sevClass}">${r.severity}</span>
+                    <strong style="display:block; margin-top: 4px;">${r.campaign_name}</strong>
+                    <small style="color: var(--ac-text-2);">${r.affected_components || ''}</small>
+                </div>`;
+            }).join("");
+        }
+
+        const prefsEl = document.getElementById("prefs-list");
+        if (!data.preferences.length) {
+            prefsEl.innerHTML = '<div style="color: var(--ac-text-3);">No preferences recorded yet.</div>';
+        } else {
+            prefsEl.innerHTML = data.preferences.map(p =>
+                `<div class="dg-row"><span style="color: var(--ac-text-2);">${p.category}</span>
+                 <span style="font-weight: 600;">${p.name}</span></div>`
+            ).join("");
+        }
+    }
+
+    window.PageInit = async function (pwa) {
+        if (pwa.isMockup()) {
+            renderPage(MOCKUP_DATA);
+            return;
+        }
+        try {
+            const [recalls, prefs] = await Promise.all([
+                pwa.fetchJson("/api/v1/vehicles/" + VIN + "/recalls"),
+                pwa.fetchJson("/api/v1/vehicles/" + VIN + "/preferences"),
+            ]);
+            // The /api/v1 surface doesn't expose vehicle name/mileage directly;
+            // we use the chat-side known values as a stable display label.
+            renderPage({
+                vin: recalls.vin,
+                vehicle_name: "2018 Alfa Romeo Stelvio Ti",
+                mileage_km: 89247,
+                do_not_drive: recalls.do_not_drive,
+                recalls: recalls.recalls,
+                preferences: prefs.preferences,
+            });
+        } catch (e) {
+            pwa.showError("#recalls-list", e.message);
+            pwa.showError("#prefs-list", "(see above)");
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_device_list" model="ir.ui.view">
+    <field name="name">alfa_core_scanner.device.list</field>
+    <field name="model">alfa_core_scanner.device</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="serial_number"/>
+        <field name="model_name"/>
+        <field name="partner_id"/>
+        <field name="vehicle_id"/>
+        <field name="state" widget="badge"/>
+        <field name="last_seen"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_device_form" model="ir.ui.view">
+    <field name="name">alfa_core_scanner.device.form</field>
+    <field name="model">alfa_core_scanner.device</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <label for="serial_number"/>
+            <h1><field name="serial_number"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="model_name"/>
+              <field name="firmware_version"/>
+              <field name="partner_id"/>
+              <field name="vehicle_id"/>
+            </group>
+            <group>
+              <field name="paired_date"/>
+              <field name="last_seen" readonly="1"/>
+            </group>
+          </group>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_device" model="ir.actions.act_window">
+    <field name="name">Scanner Devices</field>
+    <field name="res_model">alfa_core_scanner.device</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <record id="view_session_list" model="ir.ui.view">
+    <field name="name">alfa_core_scanner.scan_session.list</field>
+    <field name="model">alfa_core_scanner.scan_session</field>
+    <field name="arch" type="xml">
+      <list decoration-info="state == 'running'"
+            decoration-muted="state == 'aborted'">
+        <field name="name"/>
+        <field name="vehicle_id"/>
+        <field name="started_at"/>
+        <field name="duration_seconds"/>
+        <field name="dtc_count"/>
+        <field name="state" widget="badge"/>
+        <field name="inference_zde" widget="boolean_toggle" optional="hide"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_session_form" model="ir.ui.view">
+    <field name="name">alfa_core_scanner.scan_session.form</field>
+    <field name="model">alfa_core_scanner.scan_session</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <field name="state" widget="statusbar"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name" readonly="1"/></h1>
+          </div>
+          <group>
+            <group>
+              <field name="vehicle_id"/>
+              <field name="device_id"/>
+              <field name="modules_scanned"/>
+            </group>
+            <group>
+              <field name="started_at"/>
+              <field name="ended_at"/>
+              <field name="duration_seconds" readonly="1"/>
+              <field name="mileage_at_scan"/>
+              <field name="battery_voltage"/>
+              <field name="inference_zde"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="DTCs">
+              <field name="dtc_ids" readonly="1">
+                <list>
+                  <field name="dtc_code"/>
+                  <field name="dtc_status" widget="badge"/>
+                  <field name="module_source"/>
+                </list>
+              </field>
+            </page>
+            <page string="PIDs">
+              <field name="pid_ids" readonly="1">
+                <list>
+                  <field name="pid_id"/>
+                  <field name="pid_name"/>
+                  <field name="value"/>
+                  <field name="units"/>
+                </list>
+              </field>
+            </page>
+            <!-- "Diagnosis" tab is injected by alfa_core_diagnosis via _inherit -->
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_session" model="ir.actions.act_window">
+    <field name="name">Scan Sessions</field>
+    <field name="res_model">alfa_core_scanner.scan_session</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_scanner_sessions" name="Scan Sessions"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_session" sequence="30"/>
+  <menuitem id="menu_scanner_devices" name="Scanner Devices"
+            parent="alfa_core.menu_alfa_core_operations"
+            action="action_device" sequence="32"/>
+
+</odoo>

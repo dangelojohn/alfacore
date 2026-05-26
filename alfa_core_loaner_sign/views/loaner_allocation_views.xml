@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!--
+    Inject the Sign UI back into the loaner allocation form/list views.
+    Base alfa_core_loaner has placeholder comments where these xpaths land.
+  -->
+
+  <record id="view_allocation_list_inherit_sign" model="ir.ui.view">
+    <field name="name">alfa_core_loaner.allocation.list.inherit.sign</field>
+    <field name="model">alfa_core_loaner.allocation</field>
+    <field name="inherit_id" ref="alfa_core_loaner.view_allocation_list"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='state']" position="before">
+        <field name="sign_status" widget="badge"/>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="view_allocation_form_inherit_sign" model="ir.ui.view">
+    <field name="name">alfa_core_loaner.allocation.form.inherit.sign</field>
+    <field name="model">alfa_core_loaner.allocation</field>
+    <field name="inherit_id" ref="alfa_core_loaner.view_allocation_form"/>
+    <field name="arch" type="xml">
+
+      <!-- Add Send-for-Signature + Sync-Sig-Status header buttons before
+           the Pickup button. -->
+      <xpath expr="//button[@name='action_activate']" position="before">
+        <button name="action_send_for_signature" type="object" string="Send for Signature"
+                invisible="state != 'scheduled' or sign_status != 'not_sent'"/>
+        <button name="_sync_sign_status" type="object" string="Sync Sig Status"
+                invisible="sign_status != 'sent'"
+                help="Manually pull the latest state from the linked sign.request."/>
+      </xpath>
+
+      <!-- Gate the Pickup button on sign_status being signed. -->
+      <xpath expr="//button[@name='action_activate']" position="attributes">
+        <attribute name="invisible">state != 'scheduled' or sign_status != 'signed'</attribute>
+      </xpath>
+
+      <!-- Add the Signature group next to the Mileage group on the sheet. -->
+      <xpath expr="//group[@string='Mileage']" position="after">
+        <group string="Signature">
+          <field name="sign_status"/>
+          <field name="sign_request_id" readonly="1"/>
+        </group>
+      </xpath>
+
+    </field>
+  </record>
+
+</odoo>

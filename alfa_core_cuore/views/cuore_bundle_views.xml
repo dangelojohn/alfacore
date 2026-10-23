@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_cuore_bundle_list" model="ir.ui.view">
+    <field name="name">alfa.cuore.bundle.list</field>
+    <field name="model">alfa.cuore.bundle</field>
+    <field name="arch" type="xml">
+      <list create="0"
+            decoration-success="state == 'imported'"
+            decoration-danger="state == 'failed'"
+            decoration-muted="state == 'superseded'">
+        <field name="name"/>
+        <field name="kind"/>
+        <field name="vin"/>
+        <field name="vehicle_id"/>
+        <field name="station_id"/>
+        <field name="created_at"/>
+        <field name="imported_at"/>
+        <field name="imported_by_id"/>
+        <field name="dtc_count" optional="show"/>
+        <field name="hypothesis_count" optional="show"/>
+        <field name="step_count" optional="show"/>
+        <field name="finalized" optional="hide"/>
+        <field name="state" widget="badge"
+               decoration-success="state == 'imported'"
+               decoration-danger="state == 'failed'"
+               decoration-info="state == 'validated'"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_cuore_bundle_search" model="ir.ui.view">
+    <field name="name">alfa.cuore.bundle.search</field>
+    <field name="model">alfa.cuore.bundle</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="name"/>
+        <field name="bundle_uuid"/>
+        <field name="vin"/>
+        <field name="station_id"/>
+        <filter name="imported" string="Imported" domain="[('state', '=', 'imported')]"/>
+        <filter name="failed" string="Failed" domain="[('state', '=', 'failed')]"/>
+        <separator/>
+        <filter name="scan" string="Scans" domain="[('kind', '=', 'scan')]"/>
+        <filter name="job" string="Jobs" domain="[('kind', '=', 'job')]"/>
+        <group>
+          <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+          <filter name="group_vehicle" string="Vehicle" context="{'group_by': 'vehicle_id'}"/>
+          <filter name="group_station" string="Station" context="{'group_by': 'station_id'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="view_cuore_bundle_form" model="ir.ui.view">
+    <field name="name">alfa.cuore.bundle.form</field>
+    <field name="model">alfa.cuore.bundle</field>
+    <field name="arch" type="xml">
+      <form create="0" edit="0">
+        <header>
+          <field name="state" widget="statusbar" statusbar_visible="validated,imported"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1><field name="name"/></h1>
+          </div>
+          <group>
+            <group string="Bundle">
+              <field name="bundle_uuid"/>
+              <field name="kind"/>
+              <field name="source_id"/>
+              <field name="station_id"/>
+              <field name="schema_version"/>
+              <field name="cuore_version"/>
+              <field name="finalized"/>
+            </group>
+            <group string="Vehicle and time">
+              <field name="vin"/>
+              <field name="vehicle_id"/>
+              <field name="sale_order_id"/>
+              <field name="created_at"/>
+              <field name="created_at_local"/>
+              <field name="tz"/>
+              <field name="imported_at"/>
+              <field name="imported_by_id"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Validation report" name="validation">
+              <field name="validation_report" widget="text" readonly="1"/>
+              <group>
+                <field name="filename"/>
+                <field name="file_sha256"/>
+                <field name="attachment_id"/>
+              </group>
+            </page>
+            <page string="Records created" name="records">
+              <group>
+                <field name="scan_session_id"/>
+                <field name="report_id"/>
+                <field name="dtc_count"/>
+                <field name="hypothesis_count"/>
+                <field name="step_count"/>
+              </group>
+              <field name="inspection_ids" readonly="1">
+                <list>
+                  <field name="name"/>
+                  <field name="cuore_hyp_key"/>
+                  <field name="finding_count"/>
+                  <field name="state" widget="badge"/>
+                </list>
+              </field>
+            </page>
+            <page string="Hypotheses" name="hypotheses" invisible="not hypothesis_ids">
+              <field name="hypothesis_ids" readonly="1"/>
+            </page>
+            <page string="Code findings" name="code_findings" invisible="not code_findings_json">
+              <field name="code_findings_json" widget="text" readonly="1"/>
+            </page>
+            <page string="TSB cross-reference" name="tsb_xref" invisible="not tsb_xref_json">
+              <field name="tsb_xref_json" widget="text" readonly="1"/>
+            </page>
+          </notebook>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_cuore_bundle" model="ir.actions.act_window">
+    <field name="name">CUORE Bundles</field>
+    <field name="res_model">alfa.cuore.bundle</field>
+    <field name="view_mode">list,form</field>
+    <field name="search_view_id" ref="view_cuore_bundle_search"/>
+  </record>
+
+</odoo>

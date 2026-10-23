@@ -29,6 +29,7 @@ Run `make help` for the full command surface.
 |---|---|---|
 | **Modules** | `alfa_*/` | The 13 Odoo modules plus `alfa_core_cuore` (Sprint 14, offline CUORE bundle import; installed live 2026-10-22) — see `docs/SPRINT-IMPLEMENTATION-STATUS.md` |
 | **Architecture** | `docs/` | Service Plan, JTBD Gap Analyses, Application Architecture Blueprint, Decision Log |
+| **Research** | `docs/research/` | [Coloured OBD adapter cables](docs/research/ADAPTER_CABLES.md) (A1-A6, 3-pin, SGW) for Alfa, Maserati, Ferrari, Fiat and Jeep; shared with CUORE; research only |
 | **CI/CD** | `.github/workflows/` | validate / lint / test / build / sign workflows |
 | **Pre-commit** | `.pre-commit-config.yaml` | same validators run locally on every git commit |
 | **Validators** | `tools/ci/check_*.py` | manifest sanity, XML-ID cross-reference, file-existence |

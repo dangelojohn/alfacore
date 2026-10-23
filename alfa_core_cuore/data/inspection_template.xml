@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Catch-all template for CUORE mechanic plans (integration spec 5.4). AlfaCore
+    refuses to publish a template without items and an inspection needs a published
+    template, so one generic item exists. Imported inspections carry their own
+    findings and never use this item.
+  -->
+  <data noupdate="1">
+
+    <record id="template_cuore_plan" model="alfa_core_inspection.template">
+      <field name="name">CUORE mechanic plan</field>
+      <field name="code">cuore_plan</field>
+      <field name="version">1</field>
+      <field name="state">published</field>
+      <field name="description">Internal template for diagnostic plans imported from CUORE bundles. Never sent to the customer.</field>
+      <field name="estimated_duration_minutes">0</field>
+      <field name="requires_lift" eval="False"/>
+    </record>
+
+    <record id="item_cuore_plan_step" model="alfa_core_inspection.template_item">
+      <field name="template_id" ref="template_cuore_plan"/>
+      <field name="name">CUORE plan step</field>
+      <field name="description">Placeholder item; imported steps carry their own title, source and evidence class.</field>
+      <field name="category">other</field>
+      <field name="measurement_type">pass_fail</field>
+      <field name="sequence">10</field>
+    </record>
+
+  </data>
+</odoo>

@@ -1,0 +1,55 @@
+# Translation of AlfaCore.
+# This file contains the translation of the following modules:
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: AlfaCore 19.0.1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-05-11 00:00+0000\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: French (Canada)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+"Language: fr_CA\n"
+
+#. module: alfa_core_cuore
+msgid "Import CUORE bundle"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "CUORE"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "Import bundle"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "Bundles"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "Choose a .cuore.zip file first."
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "This record comes from a CUORE bundle and cannot be edited (%(fields)s). To correct a reading, make a new scan and import its bundle; a bad import is deleted by a manager."
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "Only CUORE mechanics, service advisors and managers can import CUORE bundles."
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "Reading from the car"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "NOT a reading from the car"
+msgstr ""
+
+#. module: alfa_core_cuore
+msgid "(untitled step)"
+msgstr ""

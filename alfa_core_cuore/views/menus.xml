@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <menuitem id="menu_cuore_root"
+            name="CUORE"
+            parent="alfa_core.menu_alfa_core_root"
+            groups="alfa_core_cuore.group_cuore_mechanic,alfa_core.group_advisor"
+            sequence="35"/>
+
+  <menuitem id="menu_cuore_import"
+            name="Import bundle"
+            parent="menu_cuore_root"
+            action="action_cuore_import_wizard"
+            sequence="10"/>
+
+  <menuitem id="menu_cuore_bundles"
+            name="Bundles"
+            parent="menu_cuore_root"
+            action="action_cuore_bundle"
+            sequence="20"/>
+
+</odoo>

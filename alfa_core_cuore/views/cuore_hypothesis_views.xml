@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="view_cuore_hypothesis_list" model="ir.ui.view">
+    <field name="name">alfa.cuore.hypothesis.list</field>
+    <field name="model">alfa.cuore.hypothesis</field>
+    <field name="arch" type="xml">
+      <list create="0" edit="0" decoration-muted="deleted">
+        <field name="evidence_class" widget="badge"
+               decoration-info="evidence_class == 'inference'"
+               decoration-success="evidence_class == 'reading'"
+               decoration-warning="evidence_class == 'owner_attested'"
+               decoration-danger="evidence_class == 'outside_literature'"/>
+        <field name="text"/>
+        <field name="system"/>
+        <field name="status" widget="badge"
+               decoration-success="status == 'confirmed'"
+               decoration-info="status == 'supported'"
+               decoration-muted="status == 'refuted'"/>
+        <field name="likelihood"/>
+        <field name="safety" widget="boolean"/>
+        <field name="deleted" widget="boolean" optional="show"/>
+        <field name="evidence_count"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_cuore_hypothesis_form" model="ir.ui.view">
+    <field name="name">alfa.cuore.hypothesis.form</field>
+    <field name="model">alfa.cuore.hypothesis</field>
+    <field name="arch" type="xml">
+      <form create="0" edit="0">
+        <sheet>
+          <div class="alert alert-info" role="alert">
+            Read-only copy of a CUORE hypothesis. The status and evidence class belong to CUORE;
+            a hypothesis is an inference at best and is never a reading of the car.
+          </div>
+          <group>
+            <group>
+              <field name="text"/>
+              <field name="system"/>
+              <field name="codes"/>
+              <field name="next_test"/>
+            </group>
+            <group>
+              <field name="status"/>
+              <field name="likelihood"/>
+              <field name="evidence_class"/>
+              <field name="evidence_class_basis"/>
+              <field name="safety"/>
+              <field name="attested_resolved"/>
+              <field name="deleted"/>
+              <field name="report_id"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Evidence" name="evidence">
+              <field name="evidence_ids" readonly="1">
+                <list>
+                  <field name="side"/>
+                  <field name="evidence_class" widget="badge"/>
+                  <field name="kind"/>
+                  <field name="label"/>
+                  <field name="result"/>
+                </list>
+              </field>
+            </page>
+            <page string="CUORE audit trail" name="audit">
+              <field name="audit_json" widget="text" readonly="1"/>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_cuore_hypothesis" model="ir.actions.act_window">
+    <field name="name">CUORE Hypotheses</field>
+    <field name="res_model">alfa.cuore.hypothesis</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+</odoo>

@@ -1,0 +1,30 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "AlfaCore — CUORE Bundle Import",
+    "version": "19.0.1.0.0",
+    "category": "Services/AlfaCore",
+    "summary": "Offline import of CUORE diagnostic bundles (.cuore.zip): scans, DTC status bytes, hypotheses with evidence class, mechanic steps, proof-of-fix criteria",
+    "author": "REAL Partners Ltd. / OdooIQ",
+    "website": "https://odooiq.com",
+    "license": "LGPL-3",
+    "depends": [
+        "alfa_core",
+        "alfa_fleet",
+        "alfa_service",
+        "alfa_core_scanner",
+        "alfa_core_diagnosis",
+        "alfa_core_inspection",
+    ],
+    "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/sequences.xml",
+        "data/inspection_template.xml",
+        "views/cuore_bundle_views.xml",
+        "views/cuore_hypothesis_views.xml",
+        "views/inherited_views.xml",
+        "views/import_wizard_views.xml",
+        "views/menus.xml",
+    ],
+    "installable": True,
+}

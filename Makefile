@@ -58,7 +58,7 @@ test-all-modules: dev-up-quiet  ## Run tests for every module in sequence
 	@for mod in alfa_core alfa_fleet alfa_parts alfa_service \
 	            alfa_core_scanner alfa_core_diagnosis alfa_core_configurator \
 	            alfa_core_inspection alfa_core_loaner alfa_core_portal \
-	            alfa_core_app_api alfa_core_campaign alfa_tsb; do \
+	            alfa_core_app_api alfa_core_campaign alfa_tsb alfa_core_cuore; do \
 		echo "=== Testing $$mod ==="; \
 		MODULE=$$mod $(MAKE) test-local || exit 1; \
 	done

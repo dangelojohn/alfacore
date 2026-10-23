@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Scan session: provenance, coverage and the raw CUORE blobs -->
+  <record id="view_scan_session_form_inherit_cuore" model="ir.ui.view">
+    <field name="name">alfa_core_scanner.scan_session.form.inherit.cuore</field>
+    <field name="model">alfa_core_scanner.scan_session</field>
+    <field name="inherit_id" ref="alfa_core_scanner.view_session_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='dtc_ids']/list" position="inside">
+        <field name="cuore_from_car" widget="boolean" optional="show" string="From car"/>
+        <field name="status_byte" optional="show"/>
+        <field name="bus" optional="show"/>
+        <field name="source_service" optional="hide"/>
+        <field name="status_flags_json" optional="hide"/>
+      </xpath>
+      <xpath expr="//notebook" position="inside">
+        <page string="CUORE" name="cuore" invisible="not cuore_bundle_id">
+          <group>
+            <group>
+              <field name="cuore_bundle_id"/>
+              <field name="cuore_source"/>
+              <field name="cuore_session_role"/>
+              <field name="cuore_scan_status"/>
+              <field name="cuore_from_car"/>
+              <field name="cuore_reading_label"/>
+              <field name="cuore_finalized"/>
+            </group>
+            <group>
+              <field name="cuore_stream"/>
+              <field name="cuore_cable"/>
+              <field name="cuore_buses_attempted"/>
+              <field name="cuore_count_active"/>
+              <field name="cuore_count_history"/>
+              <field name="cuore_count_not_run"/>
+            </group>
+          </group>
+          <group string="Coverage (a silent module is no answer, never no codes)"
+                 invisible="not cuore_coverage_json">
+            <field name="cuore_coverage_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+          <group string="Freeze frames and DTC detail" invisible="not cuore_freeze_frame_json">
+            <field name="cuore_freeze_frame_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+          <group string="Mode 06" invisible="not cuore_mode06_json">
+            <field name="cuore_mode06_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+          <group string="Readiness" invisible="not cuore_readiness_json">
+            <field name="cuore_readiness_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+          <group string="Scan requirements" invisible="not cuore_requirements_json">
+            <field name="cuore_requirements_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+          <group string="Scan header" invisible="not cuore_scan_meta_json">
+            <field name="cuore_scan_meta_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+  <!-- Diagnosis report: hypotheses with evidence class, proof-of-fix criteria -->
+  <record id="view_report_form_inherit_cuore" model="ir.ui.view">
+    <field name="name">alfa_core_diagnosis.report.form.inherit.cuore</field>
+    <field name="model">alfa_core_diagnosis.report</field>
+    <field name="inherit_id" ref="alfa_core_diagnosis.view_report_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//notebook" position="inside">
+        <page string="CUORE hypotheses" name="cuore_hypotheses" invisible="not cuore_bundle_id">
+          <div class="alert alert-warning" role="alert">
+            No confidence figure is computed. Each hypothesis shows CUORE's status and the weakest
+            evidence class behind it. Only a reading supports "the car showed X".
+          </div>
+          <group>
+            <group>
+              <field name="cuore_bundle_id"/>
+              <field name="cuore_job_id"/>
+              <field name="cuore_station_id"/>
+              <field name="cuore_technician"/>
+            </group>
+            <group>
+              <field name="cuore_job_status"/>
+              <field name="cuore_job_outcome"/>
+              <field name="cuore_evidence_class" widget="badge"/>
+            </group>
+          </group>
+          <field name="cuore_complaint" widget="text" readonly="1"/>
+          <field name="hypothesis_ids" readonly="1"/>
+        </page>
+        <page string="Proof of fix" name="cuore_proof" invisible="not cuore_bundle_id">
+          <group>
+            <field name="cuore_proof_present"/>
+          </group>
+          <field name="cuore_proof_criteria" widget="text" readonly="1"
+                 placeholder="No proof-of-fix criteria in the bundle."/>
+          <group string="As exported (JSON)" invisible="not cuore_proof_json">
+            <field name="cuore_proof_json" widget="text" nolabel="1" colspan="2" readonly="1"/>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+
+  <!-- Inspection: step columns on the findings list -->
+  <record id="view_inspection_form_inherit_cuore" model="ir.ui.view">
+    <field name="name">alfa_core_inspection.inspection.form.inherit.cuore</field>
+    <field name="model">alfa_core_inspection.inspection</field>
+    <field name="inherit_id" ref="alfa_core_inspection.view_inspection_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='finding_ids']/list" position="inside">
+        <field name="evidence_class" widget="badge" optional="show"/>
+        <field name="step_kind" optional="show"/>
+        <field name="step_done" widget="boolean" optional="show"/>
+        <field name="step_source" optional="hide"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

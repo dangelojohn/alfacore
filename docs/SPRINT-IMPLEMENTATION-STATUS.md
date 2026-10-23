@@ -10,7 +10,7 @@
 
 ## What's in this drop
 
-Thirteen sprints of working Odoo modules. Models, security, views, demo data, and tests
+Thirteen sprints of working Odoo modules plus the Sprint 14 CUORE import foundation. Models, security, views, demo data, and tests
 across the foundation through diagnostic, configurator, inspection, loaner, portal,
 companion-app API, recall campaign, and TSB knowledge surface. Syntax-verified, ready for
 `odoo-bin -i <module> -d alfacore_dev --test-enable`.
@@ -32,6 +32,7 @@ companion-app API, recall campaign, and TSB knowledge surface. Syntax-verified, 
 | 11     | `alfa_core_app_api`        | **Full**   | 12    | alfacore_smoke, alfacore_sprint11    |
 | 12     | `alfa_core_campaign`       | **Full**   | 13    | alfacore_smoke, alfacore_sprint12    |
 | 13     | `alfa_tsb`                 | **Full**   | 12    | alfacore_smoke, alfacore_sprint13    |
+| 14     | `alfa_core_cuore`          | **Foundation** | 30 | alfacore_smoke, alfacore_sprint14    |
 
 **Full** = models + security + views + demo + tests + manifest. Installable, testable, ready.
 
@@ -107,6 +108,16 @@ Two demo campaigns seeded (Stelvio fuel pump, Giorgio coil pack).
 TSB document corpus with chunking pipeline, Qdrant collection state tracking, embedding
 + search stubs. Demo TSB seeded with realistic Giorgio 2.0L misfire diagnosis content.
 
+
+### Sprint 14 — `alfa_core_cuore` (Foundation)
+Offline import wizard for CUORE diagnostic bundles (`*.cuore.zip`): upload, validate, preview
+(VIN match, counts), import. Scan bundles become scan sessions with UDS status bytes and
+Mode 06 / freeze-frame JSON; job bundles become a diagnosis report whose hypotheses keep their
+evidence class and CUORE status, with mechanic steps as internal inspection lines and
+proof-of-fix criteria on the report. Idempotent on `bundle_uuid`; imported readings are
+read-only. Foundation, not Full: the Odoo tests (3 methods) have not been run against a live
+Odoo yet, and recommendations, proof-of-fix model, release guard, station registry and
+catalogue import are deferred (see the module README).
 ---
 
 ## Twelve patterns — where they land in the code

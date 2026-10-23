@@ -75,6 +75,14 @@ Items are grouped by phase. Each item is checked off by the person responsible; 
 - [ ] **Pilot customer agreements drafted** — clear scope, clear data handling, clear exit
 - [ ] **Pilot launch date confirmed** with all stakeholders
 
+## Phase H — Live instance upkeep (OdooIQ QNAP)
+
+- [ ] **Run Apps > Update Apps List** in the live Odoo so `alfa_tsb` registers (the folder is in the addons path but the module is not yet known to Odoo), then install it; take a database dump first
+- [ ] **Rotate database/container passwords on the shared QNAP** — other Odoo containers' DB passwords were visible in a `ps` listing; rotate them and supply them by env file or secret, never on a command line. Record only the date, never the values
+- [ ] **Reset the `admin` and `demo` logins on the `alfacore` database through the Odoo shell** only when the owner asks (passwords are hashed and cannot be read back; the prepared reset script is not to be run without the owner's explicit OK)
+- [ ] **Test-then-install any new module** — throwaway database with `--test-enable`, pre-install dump, then install with `-i <module> --stop-after-init`; procedure in `docs/deployment/OdooIQ-QNAP-2026-10-22.md`
+- [ ] **Every `.po` entry carries a `#. module: <name>` comment** (Odoo 19 loader crashes without it)
+
 ---
 
 ## Decision Log compliance checks

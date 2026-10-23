@@ -27,12 +27,13 @@ Run `make help` for the full command surface.
 
 | Layer | Where | Purpose |
 |---|---|---|
-| **Modules** | `alfa_*/` | The 13 Odoo modules — see `docs/SPRINT-IMPLEMENTATION-STATUS.md` |
+| **Modules** | `alfa_*/` | The 13 Odoo modules plus `alfa_core_cuore` (Sprint 14, offline CUORE bundle import; installed live 2026-10-22) — see `docs/SPRINT-IMPLEMENTATION-STATUS.md` |
 | **Architecture** | `docs/` | Service Plan, JTBD Gap Analyses, Application Architecture Blueprint, Decision Log |
 | **CI/CD** | `.github/workflows/` | validate / lint / test / build / sign workflows |
 | **Pre-commit** | `.pre-commit-config.yaml` | same validators run locally on every git commit |
 | **Validators** | `tools/ci/check_*.py` | manifest sanity, XML-ID cross-reference, file-existence |
 | **Deployment** | `deploy/` | Kustomize base + dev/prod overlays + Argo CD Applications |
+| **Live deployment record** | `docs/deployment/` | OdooIQ QNAP live instance: containers, volumes, install procedure, gotchas |
 | **Init-container** | `addon-loader/` | Cosign-verifying init-container source |
 | **Dev stack** | `docker-compose.dev.yml` | local Odoo + Postgres + Qdrant + Ollama |
 

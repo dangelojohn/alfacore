@@ -18,6 +18,21 @@ the person presses Import. `CUORE -> Bundles` lists every bundle with its valida
 | `job` | one `alfa_core_diagnosis.report` (state `draft` or `pending_review`, never `reviewed`) with `alfa.cuore.hypothesis` rows that keep CUORE's status and evidence class, proof-of-fix criteria on the report, and one internal `alfa_core_inspection.inspection` per plan whose findings are the mechanic steps |
 | both | code findings and TSB cross-reference stored as read-only JSON on `alfa.cuore.bundle` |
 
+## How to import a `.cuore.zip`
+
+1. In CUORE, press **Export for AlfaCore**. The file is written to the CUORE state folder under
+   `exports/` as `*.cuore.zip`.
+2. Carry the file to the machine you use for Odoo (USB stick or file copy; there is no network link).
+3. In Odoo open **CUORE -> Import bundle**. You need the CUORE mechanic group, or advisor or manager.
+4. Upload the `.cuore.zip`. The wizard validates it and shows any errors; fix the export, not the file.
+5. Check the preview: vehicle matched by VIN, counts of DTCs, hypotheses and steps. Optionally pick the
+   service order (its vehicle VIN must equal the bundle's).
+6. Press **Import**. Nothing is written before this step. Re-importing the same file is safe: it says
+   "already imported" and creates nothing.
+7. Review the result under **CUORE -> Bundles**.
+
+The vehicle must already exist in `alfa_fleet`; the importer never creates customers or vehicles.
+
 ## Rules the importer keeps
 
 - **Untrusted input.** The vendored `lib/bundle_schema.py` (from CUORE, same author, standard
@@ -64,7 +79,7 @@ Not in this foundation, listed so nobody assumes they exist:
   service order, work order card export, receipt file, station registry, or catalogue (`alfa_tsb`,
   campaign) import. See `docs/integration` in the CUORE repository, spec sections 5.5, 5.6 and 6.6.
 - Spec 6.4 rule 8 (reject command-like fields) is not implemented.
-- Dependent Odoo tests were written without being run here; run them before relying on the module:
+- The 3 Odoo tests passed on a throwaway database on 2026-10-22 and the module is installed live. To re-run them:
 
 ```bash
 odoo-bin -d test_alfacore -i alfa_core_cuore --test-enable --stop-after-init \

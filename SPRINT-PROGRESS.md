@@ -157,6 +157,20 @@ The architecture corpus and decision log fully define these. They are
 
 ---
 
+## ✅ Sprint 14 — `alfa_core_cuore` (CUORE bundle import, Foundation) — INSTALLED LIVE 2026-10-22
+
+**Goal:** Offline, file-based import of CUORE diagnostic bundles (`*.cuore.zip`, schema
+`cuore.bundle/1.0`) into scan sessions, diagnosis reports and inspection steps. No network link, no tokens.
+
+- Models: `alfa.cuore.bundle`, import wizard `alfa.cuore.import.wizard`, vendored `lib/bundle_schema.py`.
+- Idempotent re-import via uuid5 ids; imported readings are read-only.
+- Branch `feature/alfa_core_cuore`: `1f7ac55` (feature) + `452c10d` (`.po` fix), merged to `main` as `a7dce7b`.
+- Tested on a throwaway database (3 Odoo tests pass), then **installed on the live `alfacore` database on
+  2026-10-22** after a pre-install backup. Record: `docs/deployment/OdooIQ-QNAP-2026-10-22.md`.
+- Still open: pilot with one real service order by file; deferred items are listed in `alfa_core_cuore/README.md`.
+
+---
+
 ## Installation order
 
 To bring up the demo environment from a clean Odoo 19 install:

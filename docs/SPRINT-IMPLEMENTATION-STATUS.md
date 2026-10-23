@@ -32,7 +32,7 @@ companion-app API, recall campaign, and TSB knowledge surface. Syntax-verified, 
 | 11     | `alfa_core_app_api`        | **Full**   | 12    | alfacore_smoke, alfacore_sprint11    |
 | 12     | `alfa_core_campaign`       | **Full**   | 13    | alfacore_smoke, alfacore_sprint12    |
 | 13     | `alfa_tsb`                 | **Full**   | 12    | alfacore_smoke, alfacore_sprint13    |
-| 14     | `alfa_core_cuore`          | **Foundation** | 30 | alfacore_smoke, alfacore_sprint14    |
+| 14     | `alfa_core_cuore`          | **Foundation** (installed live 2026-10-22) | 30 | alfacore_smoke, alfacore_sprint14    |
 
 **Full** = models + security + views + demo + tests + manifest. Installable, testable, ready.
 
@@ -115,9 +115,10 @@ Offline import wizard for CUORE diagnostic bundles (`*.cuore.zip`): upload, vali
 Mode 06 / freeze-frame JSON; job bundles become a diagnosis report whose hypotheses keep their
 evidence class and CUORE status, with mechanic steps as internal inspection lines and
 proof-of-fix criteria on the report. Idempotent on `bundle_uuid`; imported readings are
-read-only. Foundation, not Full: the Odoo tests (3 methods) have not been run against a live
-Odoo yet, and recommendations, proof-of-fix model, release guard, station registry and
-catalogue import are deferred (see the module README).
+read-only. Foundation, not Full: recommendations, proof-of-fix model, release guard, station
+registry and catalogue import are deferred (see the module README). The 3 Odoo tests pass on a
+throwaway database, and the module was **installed on the live `alfacore` database on 2026-10-22**
+(see `docs/deployment/OdooIQ-QNAP-2026-10-22.md`).
 ---
 
 ## Twelve patterns — where they land in the code

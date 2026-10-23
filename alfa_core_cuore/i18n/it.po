@@ -14,32 +14,42 @@ msgstr ""
 "Plural-Forms: \n"
 "Language: it_IT\n"
 
+#. module: alfa_core_cuore
 msgid "Import CUORE bundle"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "CUORE"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "Import bundle"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "Bundles"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "Choose a .cuore.zip file first."
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "This record comes from a CUORE bundle and cannot be edited (%(fields)s). To correct a reading, make a new scan and import its bundle; a bad import is deleted by a manager."
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "Only CUORE mechanics, service advisors and managers can import CUORE bundles."
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "Reading from the car"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "NOT a reading from the car"
 msgstr ""
 
+#. module: alfa_core_cuore
 msgid "(untitled step)"
 msgstr ""
